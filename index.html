@@ -184,5 +184,31 @@
         </div>
     </div>
     <script src="https://cdn.jsdelivr.net/gh/bubbls/ugs-singlefile@main/games.js"></script>
+    <script>
+        function stripCl(el) {
+            if (el.tagName === 'INPUT' && el.type === 'button' && el.value.startsWith('cl')) {
+                el.value = el.value.slice(2);
+            }
+            if ((el.tagName === 'BUTTON') && el.textContent.trimStart().startsWith('cl')) {
+                el.textContent = el.textContent.trimStart().slice(2);
+            }
+        }
+
+        // Strip any already-rendered buttons
+        document.querySelectorAll('input[type="button"], button').forEach(stripCl);
+
+        // Watch for buttons added dynamically by games.js
+        const observer = new MutationObserver(mutations => {
+            for (const mutation of mutations) {
+                for (const node of mutation.addedNodes) {
+                    if (node.nodeType !== 1) continue;
+                    stripCl(node);
+                    node.querySelectorAll && node.querySelectorAll('input[type="button"], button').forEach(stripCl);
+                }
+            }
+        });
+
+        observer.observe(document.body, { childList: true, subtree: true });
+    </script>
    </body> 
    </html>
