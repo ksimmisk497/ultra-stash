@@ -1,242 +1,617 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Wes's stash thingy</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wes's Stash Thingy</title>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            background: linear-gradient(135deg, #2e3244 0%, #36224b 100%);
-            min-height: 100vh;
+        * {
+            box-sizing: border-box;
             margin: 0;
             padding: 0;
-            display: flex;
         }
 
-        .sidebar {
-            position: fixed;
-            left: 0;
-            top: 0;
-            width: 80px;
-            height: 100vh;
-            background: rgba(0, 0, 0, 0.3);
-            backdrop-filter: blur(10px);
-            padding: 20px 10px;
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-            overflow-y: auto;
-            box-shadow: 2px 0 10px rgba(0,0,0,0.3);
-            z-index: 1000;
-        }
-
-        .sidebar::-webkit-scrollbar {
-            width: 6px;
-        }
-
-        .sidebar::-webkit-scrollbar-track {
-            background: rgba(255,255,255,0.1);
-        }
-
-        .sidebar::-webkit-scrollbar-thumb {
-            background: rgba(255,255,255,0.3);
-            border-radius: 3px;
-        }
-
-        .sidebar-btn {
-            background: rgb(89, 134, 218);
-            border: none;
-            padding: 12px;
-            font-size: 18px;
-            font-weight: 700;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            color: white;
-            text-align: center;
-            min-height: 45px;
-        }
-
-        .sidebar-btn:hover {
-            background: #79aadb;
-            transform: scale(1.05);
-        }
-
-        .sidebar-btn.empty {
-            opacity: 0.4;
-            cursor: default;
-        }
-
-        .sidebar-btn.empty:hover {
-            transform: none;
-            background: rgb(89, 134, 218);
-        }
-        .main-content {
-            margin-left: 100px;
-            flex: 1;
-            padding: 20px;
-            display: flex;
-            flex-direction: column;
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background: #0b0d17;
             min-height: 100vh;
-            box-sizing: border-box;
+            color: #e8ecff;
+            overflow-x: hidden;
+            position: relative;
         }
 
-        h1 {
+
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background: 
+                radial-gradient(ellipse 80% 50% at 20% 40%, rgba(70, 90, 200, 0.15), transparent),
+                radial-gradient(ellipse 60% 40% at 80% 20%, rgba(140, 70, 220, 0.12), transparent),
+                linear-gradient(160deg, #0b0d17 0%, #13162b 50%, #0f1220 100%);
+            z-index: -2;
+        }
+
+
+        .circles {
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            z-index: 0;
+            overflow: hidden;
+        }
+
+        .circle {
+            position: absolute;
+            border-radius: 50%;
+            border: 2px solid;
+            opacity: 0.55;
+            will-change: transform;
+            animation: float 30s infinite ease-in-out;
+        }
+
+        .circle:nth-child(1) {
+            width: 200px; height: 200px;
+            top: 8%; left: 4%;
+            border-color: rgba(110, 160, 255, 0.45);
+            box-shadow: 0 0 25px rgba(100, 150, 255, 0.12);
+            animation-duration: 36s;
+        }
+        .circle:nth-child(2) {
+            width: 130px; height: 130px;
+            top: 55%; left: 82%;
+            border-color: rgba(180, 110, 255, 0.4);
+            box-shadow: 0 0 20px rgba(160, 90, 255, 0.1);
+            animation-duration: 28s;
+            animation-delay: -6s;
+        }
+        .circle:nth-child(3) {
+            width: 260px; height: 260px;
+            top: 28%; left: 68%;
+            border-color: rgba(90, 180, 255, 0.32);
+            animation-duration: 42s;
+            animation-delay: -14s;
+        }
+        .circle:nth-child(4) {
+            width: 100px; height: 100px;
+            top: 72%; left: 12%;
+            border-color: rgba(140, 170, 255, 0.5);
+            box-shadow: 0 0 18px rgba(120, 150, 255, 0.12);
+            animation-duration: 24s;
+            animation-delay: -4s;
+        }
+        .circle:nth-child(5) {
+            width: 170px; height: 170px;
+            top: 12%; left: 42%;
+            border-color: rgba(120, 150, 255, 0.38);
+            animation-duration: 34s;
+            animation-delay: -11s;
+        }
+        .circle:nth-child(6) {
+            width: 90px; height: 90px;
+            top: 40%; left: 8%;
+            border-color: rgba(100, 200, 255, 0.48);
+            animation-duration: 22s;
+            animation-delay: -2s;
+        }
+        .circle:nth-child(7) {
+            width: 210px; height: 210px;
+            top: 65%; left: 45%;
+            border-color: rgba(150, 100, 255, 0.3);
+            animation-duration: 38s;
+            animation-delay: -9s;
+        }
+        .circle:nth-child(8) {
+            width: 70px; height: 70px;
+            top: 20%; left: 88%;
+            border-color: rgba(90, 190, 255, 0.55);
+            animation-duration: 20s;
+            animation-delay: -7s;
+        }
+        .circle:nth-child(9) {
+            width: 150px; height: 150px;
+            top: 80%; left: 70%;
+            border-color: rgba(130, 140, 255, 0.35);
+            animation-duration: 31s;
+            animation-delay: -15s;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translate(0, 0); }
+            50% { transform: translate(35px, -45px); }
+        }
+
+        .menu-toggle {
+            position: fixed;
+            top: 18px;
+            left: 18px;
+            z-index: 300;
+            width: 46px;
+            height: 46px;
+            border-radius: 12px;
+            background: rgba(20, 25, 50, 0.85);
+            border: 1px solid rgba(130, 160, 255, 0.25);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+            cursor: pointer;
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.4);
+        }
+
+        .menu-toggle:hover {
+            background: rgba(40, 55, 100, 0.9);
+            box-shadow: 0 0 20px rgba(100, 140, 255, 0.3);
+        }
+
+        .menu-toggle span {
+            display: block;
+            width: 20px;
+            height: 2px;
+            background: #c8d6ff;
+            border-radius: 2px;
+            transition: all 0.3s ease;
+        }
+
+        .menu-toggle.active span:nth-child(1) {
+            transform: translateY(7px) rotate(45deg);
+        }
+        .menu-toggle.active span:nth-child(2) {
+            opacity: 0;
+        }
+        .menu-toggle.active span:nth-child(3) {
+            transform: translateY(-7px) rotate(-45deg);
+        }
+
+        .categories-panel {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 280px;
+            height: 100vh;
+            background: rgba(12, 15, 30, 0.96);
+            backdrop-filter: blur(16px);
+            border-right: 1px solid rgba(120, 150, 255, 0.15);
+            z-index: 250;
+            transform: translateX(-100%);
+            transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            padding: 30px 20px 30px;
+            overflow-y: auto;
+            box-shadow: 10px 0 40px rgba(0,0,0,0.5);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .categories-panel.open {
+            transform: translateX(0);
+        }
+
+        .sidebar-logo {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 28px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid rgba(130, 160, 255, 0.15);
+        }
+
+        .sidebar-logo img {
+            max-width: 140px;
+            height: auto;
+            filter: drop-shadow(0 0 12px rgba(120, 160, 255, 0.35));
+        }
+
+        .categories-panel h3 {
+            font-size: 13px;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            color: rgba(180, 200, 255, 0.5);
+            margin-bottom: 16px;
+            padding-left: 8px;
+        }
+
+        .category-btn {
+            display: block;
+            width: 100%;
+            padding: 13px 16px;
+            margin-bottom: 6px;
+            background: transparent;
+            border: 1px solid transparent;
+            border-radius: 12px;
+            color: #c8d4ff;
+            font-size: 15px;
+            font-weight: 500;
+            text-align: left;
+            cursor: pointer;
+            transition: all 0.25s ease;
+        }
+
+        .category-btn:hover {
+            background: rgba(80, 120, 255, 0.15);
+            border-color: rgba(120, 160, 255, 0.2);
             color: white;
+        }
+
+        .category-btn.active {
+            background: linear-gradient(135deg, rgba(70, 120, 255, 0.35), rgba(110, 80, 220, 0.25));
+            border-color: rgba(130, 170, 255, 0.35);
+            color: white;
+            box-shadow: 0 0 15px rgba(90, 130, 255, 0.2);
+        }
+
+        .overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.55);
+            z-index: 200;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.35s ease;
+        }
+
+        .overlay.show {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .main-content {
+            margin-left: 0;
+            padding: 28px 20px 50px;
+            position: relative;
+            z-index: 1;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .header {
             text-align: center;
-            margin-bottom: 30px;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+            margin-bottom: 28px;
+            padding-top: 10px;
+        }
+
+        .header h1 {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 14px;
+            font-size: 2.4rem;
+            font-weight: 800;
+            letter-spacing: -1px;
+            background: linear-gradient(90deg, #a8c4ff, #d0b0ff, #90d0ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 8px;
+        }
+
+        .header h1 img {
+            height: 46px;
+            width: auto;
+            filter: drop-shadow(0 0 10px rgba(120, 160, 255, 0.4));
+        }
+
+        .credits {
+            color: rgba(200, 210, 255, 0.5);
+            font-size: 14px;
+        }
+
+        .search-area {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 35px;
+        }
+
+        #searchInput {
+            width: 100%;
+            max-width: 460px;
+            padding: 14px 20px;
+            font-size: 15.5px;
+            border-radius: 14px;
+            border: 1px solid rgba(130, 160, 255, 0.18);
+            background: rgba(20, 25, 45, 0.55);
+            color: #eef2ff;
+            outline: none;
+            transition: all 0.25s ease;
+            backdrop-filter: blur(8px);
+        }
+
+        #searchInput::placeholder {
+            color: rgba(180, 195, 255, 0.4);
+        }
+
+        #searchInput:focus {
+            background: rgba(30, 35, 60, 0.7);
+            border-color: rgba(120, 160, 255, 0.5);
+            box-shadow: 0 0 0 3px rgba(100, 140, 255, 0.12);
+        }
+
+        #lolbutton {
+            background: rgba(70, 110, 220, 0.18);
+            border: 1px solid rgba(110, 150, 255, 0.3);
+            color: rgba(200, 215, 255, 0.8);
+            padding: 8px 18px;
+            border-radius: 11px;
+            font-size: 13px;
+            cursor: pointer;
+            transition: all 0.25s ease;
+        }
+
+        #lolbutton:hover {
+            background: rgba(90, 140, 255, 0.3);
+            color: white;
+        }
+
+        #sections-container {
+            flex: 1;
+            max-width: 920px;
+            margin: 0 auto;
+            width: 100%;
         }
 
         .letter-section {
-            margin-bottom: 40px;
-            padding: 0 20px;
-            max-width: 900px;
-            margin-left: auto;
-            margin-right: auto;
-            min-height: 100px;
-        }
-
-        .letter-section.empty {
-            opacity: 0.5;
+            margin-bottom: 42px;
+            padding: 0 8px;
+            content-visibility: auto;
+            contain: layout style;
         }
 
         .letter-header {
-            color: white;
-            font-size: 32px;
-            font-weight: bold;
-            margin-bottom: 15px;
-            padding-bottom: 10px;
-            border-bottom: 3px solid rgba(255,255,255,0.3);
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 16px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid rgba(130, 160, 255, 0.15);
+            letter-spacing: 1.5px;
+            color: #c8d6ff;
         }
 
         .buttons-container {
             display: flex;
             flex-direction: column;
-            gap: 10px;
+            gap: 9px;
             align-items: center;
         }
 
-        .empty-message {
-            color: rgba(255,255,255,0.6);
-            font-style: italic;
-            text-align: center;
-            padding: 20px;
-        }
-
         input[type="button"] {
-            background: rgb(89, 134, 218);
-            border: none;
-            padding: 15px 30px;
-            font-size: 16px;
+            background: linear-gradient(135deg, rgba(55, 90, 200, 0.3), rgba(80, 60, 180, 0.22));
+            border: 1px solid rgba(130, 160, 255, 0.15);
+            padding: 14px 22px;
+            font-size: 15px;
             font-weight: 500;
-            border-radius: 8px;
+            border-radius: 13px;
             cursor: pointer;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-            transition: all 0.3s ease;
             width: 100%;
-            max-width: 600px;
-            color: white;
+            max-width: 620px;
+            color: #eef2ff;
             text-align: left;
+            transition: transform 0.2s ease, background 0.2s ease, box-shadow 0.2s ease;
+            /* Removed heavy backdrop-filter for better scroll performance */
         }
 
         input[type="button"]:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 12px rgba(0,0,0,0.2);
-            background: #79aadb;
+            background: linear-gradient(135deg, rgba(80, 130, 255, 0.5), rgba(120, 80, 230, 0.35));
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(80, 120, 255, 0.22);
+            border-color: rgba(160, 190, 255, 0.3);
         }
 
-        input[type="button"]:active {
-            transform: translateY(0);
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        .empty-message {
+            color: rgba(180, 195, 255, 0.4);
+            font-style: italic;
+            text-align: center;
+            padding: 30px;
         }
 
-        #sections-container {  
-            flex: 1;
-        }
         .site-footer {
             text-align: center;
-            color: rgba(255, 255, 255, 0.5);
-            font-size: 14px;
-            padding: 20px 0 10px 0;
-            margin-top: auto; 
+            color: rgba(180, 195, 255, 0.3);
+            font-size: 13px;
+            padding: 35px 0 18px;
+            margin-top: 40px;
         }
 
         .footer-link-blue {
-            color: rgb(89, 134, 218); 
+            color: #8ab4ff;
             text-decoration: none;
-            font-weight: 500;
-            transition: color 0.2s ease;
+            transition: color 0.2s;
         }
-
         .footer-link-blue:hover {
-            color: #79aadb; 
-            text-decoration: underline;
+            color: #b8d4ff;
         }
 
         @media (max-width: 768px) {
-            .sidebar {
-                width: 60px;
-                padding: 15px 5px;
-            }
-            .sidebar-btn {
-                padding: 8px;
-                font-size: 16px;
-            }
             .main-content {
-                margin-left: 70px;
+                padding: 20px 12px 30px;
+            }
+            .header h1 {
+                font-size: 1.7rem;
+            }
+            .header h1 img {
+                height: 36px;
+            }
+            .categories-panel {
+                width: 260px;
+            }
+            .sidebar-logo img {
+                max-width: 120px;
             }
         }
     </style>
 </head>
 <body>
-    <div class="sidebar" id="sidebar">
+    <div class="circles">
+        <div class="circle"></div>
+        <div class="circle"></div>
+        <div class="circle"></div>
+        <div class="circle"></div>
+        <div class="circle"></div>
+        <div class="circle"></div>
+        <div class="circle"></div>
+        <div class="circle"></div>
+        <div class="circle"></div>
+    </div>
+
+  
+    <button class="menu-toggle" id="menuToggle" aria-label="Toggle categories">
+        <span></span>
+        <span></span>
+        <span></span>
+    </button>
+
+
+    <div class="overlay" id="overlay"></div>
+
+ 
+    <div class="categories-panel" id="categoriesPanel">
+        <div class="sidebar-logo">
+            <img src="logo.png" alt="Logo">
+        </div>
+
+        <h3>Categories</h3>
+        <button class="category-btn active" data-category="all">All Games</button>
+        <button class="category-btn" data-category="action">Action & Shooters</button>
+        <button class="category-btn" data-category="puzzle">Puzzle & Brain</button>
+        <button class="category-btn" data-category="multiplayer">Multiplayer</button>
+        <button class="category-btn" data-category="idle">Idle & Clicker</button>
+        <button class="category-btn" data-category="racing">Racing & Driving</button>
+        <button class="category-btn" data-category="platformer">Platformers</button>
+        <button class="category-btn" data-category="horror">Horror</button>
+        <button class="category-btn" data-category="sports">Sports</button>
+        <button class="category-btn" data-category="retro">Retro & Arcade</button>
+        <button class="category-btn" data-category="strategy">Strategy</button>
     </div>
 
     <div class="main-content">
-        <h1 style="display: flex; align-items: center; justify-content: center; gap: 10px;">
-            <img src="logo.png" style="height: 40px; width: auto;" alt="Logo">
-            <span>Wes's stash thingy</span>
-        </h1>
-        <h2 style="color: white; text-align: center; margin-bottom: 30px; text-shadow: 2px 2px 4px rgba(0,0,0,0.3); font-weight: normal; font-size: 18px;">
-            Credits to wes and mason for finding the games
-        </h2>
-        <h2 style="color: white; text-align: center; margin-bottom: 30px; text-shadow: 2px 2px 4px rgba(0,0,0,0.3); font-weight: normal; font-size: 18px;">
-            <input type="text" placeholder="Search" id="searchInput" style="padding: 13px; width: 100%; max-width: 420px; border-radius: 8px; border: none; box-shadow: 0 2px 4px rgba(7, 105, 218, 0.1);">
-            <script src="https://cdn.jsdelivr.net/gh/bubbls/ugs-singlefile@main/searchbut.js"></script>
-            <button id="lolbutton" onclick="const script = document.createElement('script');script.src = 'https://cdn.jsdelivr.net/gh/bubbls/ugs-singlefile@latest/game.js';document.body.appendChild(script);">Click to load if it isnt loading</button>
-        </h2> 
-
-        <div id="sections-container">  
+        <div class="header">
+            <h1>
+                <img src="logo.png" alt="Logo">
+                <span>Wes's Stash Thingy</span>
+            </h1>
+            <p class="credits">Credits to Wes & Mason for finding the games</p>
         </div>
 
+        <div class="search-area">
+            <input type="text" placeholder="Search games..." id="searchInput">
+            <script src="https://cdn.jsdelivr.net/gh/bubbls/ugs-singlefile@main/searchbut.js"></script>
+            <button id="lolbutton" onclick="const script = document.createElement('script');script.src = 'https://cdn.jsdelivr.net/gh/bubbls/ugs-singlefile@latest/game.js';document.body.appendChild(script);">
+                Click to load if it isn't loading
+            </button>
+        </div>
+
+        <div id="sections-container"></div>
+
         <footer class="site-footer">
-            Made by Wes • &copy; 2026 Crown Games. All rights reserved. | <a href="privacy.html" class="footer-link-blue">Privacy Policy</a>
+            Made by Wes • © 2026 Crown Games. All rights reserved. |
+            <a href="privacy.html" class="footer-link-blue">Privacy Policy</a>
         </footer>
     </div>
 
     <script src="https://cdn.jsdelivr.net/gh/bubbls/ugs-singlefile@main/games.js"></script>
     <script>
+        const categoryKeywords = {
+            action: ['shoot', 'gun', 'war', 'battle', 'fight', 'combat', 'doom', 'bullet', 'zombie', 'kill', 'assassin', 'strike'],
+            puzzle: ['puzzle', '2048', 'match', 'block', 'sudoku', 'brain', 'logic', 'tetris', 'slide'],
+            multiplayer: ['multi', 'versus', '1v1', '2 player', '3 player', '4 player', 'online', 'pvp'],
+            idle: ['idle', 'clicker', 'incremental', 'tycoon', 'capitalist', 'merge'],
+            racing: ['race', 'car', 'drive', 'drift', 'moto', 'bike', 'speed', 'track'],
+            platformer: ['platform', 'jump', 'mario', 'adventure', 'run', 'dash', 'geometry'],
+            horror: ['horror', 'scary', 'fear', 'nightmare', 'dark', 'ghost', 'haunt', 'dead'],
+            sports: ['soccer', 'football', 'basket', 'tennis', 'golf', 'sport', 'ball'],
+            retro: ['nes', 'snes', 'arcade', 'retro', 'classic', '8bit', '16bit', 'pixel'],
+            strategy: ['strategy', 'tower', 'defense', 'empire', 'war', 'tactics', 'chess', 'age of']
+        };
+
+        const menuToggle = document.getElementById('menuToggle');
+        const categoriesPanel = document.getElementById('categoriesPanel');
+        const overlay = document.getElementById('overlay');
+
+        function toggleMenu() {
+            menuToggle.classList.toggle('active');
+            categoriesPanel.classList.toggle('open');
+            overlay.classList.toggle('show');
+        }
+
+        menuToggle.addEventListener('click', toggleMenu);
+        overlay.addEventListener('click', toggleMenu);
+
+        let currentCategory = 'all';
+
+        document.querySelectorAll('.category-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.category-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                currentCategory = btn.dataset.category;
+                filterGames();
+                if (window.innerWidth < 900) toggleMenu();
+            });
+        });
+
+        function filterGames() {
+            const buttons = document.querySelectorAll('input[type="button"]');
+            const sections = document.querySelectorAll('.letter-section');
+
+            buttons.forEach(btn => {
+                const text = (btn.value || '').toLowerCase();
+                let show = currentCategory === 'all';
+
+                if (!show && categoryKeywords[currentCategory]) {
+                    show = categoryKeywords[currentCategory].some(kw => text.includes(kw));
+                }
+
+                btn.style.display = show ? '' : 'none';
+            });
+
+            sections.forEach(section => {
+                const visibleButtons = section.querySelectorAll('input[type="button"]:not([style*="display: none"])');
+                section.style.display = visibleButtons.length > 0 ? '' : 'none';
+            });
+        }
+
+        function addSpacesBetweenWords(str) {
+            return str
+                .replace(/([a-z0-9])([A-Z])/g, '$1 $2')
+                .replace(/([A-Z]+)([A-Z][a-z])/g, '$1 $2')
+                .replace(/\s+/g, ' ')
+                .trim();
+        }
+
         function stripCl(el) {
-            if (el.tagName === 'INPUT' && el.type === 'button' && el.value.startsWith('cl')) {
-                el.value = el.value.slice(2);
+            if (el.id === 'menuToggle' || el.classList.contains('menu-toggle')) return;
+
+            if (el.tagName === 'INPUT' && el.type === 'button') {
+                let val = el.value;
+                if (val.startsWith('cl')) val = val.slice(2);
+                el.value = addSpacesBetweenWords(val);
             }
-            if ((el.tagName === 'BUTTON') && el.textContent.trimStart().startsWith('cl')) {
-                el.textContent = el.textContent.trimStart().slice(2);
+
+            if (el.tagName === 'BUTTON' && el.id !== 'menuToggle' && !el.classList.contains('menu-toggle')) {
+                let txt = el.textContent.trimStart();
+                if (txt.startsWith('cl')) {
+                    txt = txt.slice(2);
+                    el.textContent = addSpacesBetweenWords(txt);
+                }
             }
         }
-        document.querySelectorAll('input[type="button"], button').forEach(stripCl);
+
+        setTimeout(() => {
+            document.querySelectorAll('input[type="button"], button').forEach(stripCl);
+        }, 800);
+
         const observer = new MutationObserver(mutations => {
             for (const mutation of mutations) {
                 for (const node of mutation.addedNodes) {
                     if (node.nodeType !== 1) continue;
-                    stripCl(node);
+                    if (node.tagName === 'INPUT' || node.tagName === 'BUTTON') stripCl(node);
                     node.querySelectorAll && node.querySelectorAll('input[type="button"], button').forEach(stripCl);
                 }
             }
         });
-
         observer.observe(document.body, { childList: true, subtree: true });
     </script>
-</body> 
+</body>
 </html>
