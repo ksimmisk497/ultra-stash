@@ -70,11 +70,14 @@
             transform: none;
             background: rgb(89, 134, 218);
         }
-
         .main-content {
             margin-left: 100px;
             flex: 1;
             padding: 20px;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            box-sizing: border-box;
         }
 
         h1 {
@@ -148,6 +151,29 @@
             box-shadow: 0 2px 4px rgba(0,0,0,0.1);
         }
 
+        #sections-container {  
+            flex: 1;
+        }
+        .site-footer {
+            text-align: center;
+            color: rgba(255, 255, 255, 0.5);
+            font-size: 14px;
+            padding: 20px 0 10px 0;
+            margin-top: auto; 
+        }
+
+        .footer-link-blue {
+            color: rgb(89, 134, 218); 
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.2s ease;
+        }
+
+        .footer-link-blue:hover {
+            color: #79aadb; 
+            text-decoration: underline;
+        }
+
         @media (max-width: 768px) {
             .sidebar {
                 width: 60px;
@@ -168,24 +194,27 @@
     </div>
 
     <div class="main-content">
-<h1 style="display: flex; align-items: center; justify-content: center; gap: 10px;">
-    <img src="logo.png" style="height: 40px; width: auto;" alt="Logo">
-    <span>Wes's stash thingy</span>
-</h1>
-    <h2 style="color: white; text-align: center; margin-bottom: 30px; text-shadow: 2px 2px 4px rgba(0,0,0,0.3); font-weight: normal; font-size: 18px;">
-      Credits to wes and mason for finding the games
-    </a>
-    </h2>
-    <h2 style="color: white; text-align: center; margin-bottom: 30px; text-shadow: 2px 2px 4px rgba(0,0,0,0.3); font-weight: normal; font-size: 18px;">
-        <input type="text" placeholder="Search..." id="searchInput" style="padding: 13px; width: 100%; max-width: 420px; border-radius: 8px; border: none; box-shadow: 0 2px 4px rgba(7, 105, 218, 0.1);">
-        <script src="https://cdn.jsdelivr.net/gh/bubbls/ugs-singlefile@main/searchbut.js"></script>
-    <button id="lolbutton" onclick="const script = document.createElement('script');script.src = 'https://cdn.jsdelivr.net/gh/bubbls/ugs-singlefile@latest/game.js';document.body.appendChild(script);">Click to load if it isnt loading</button>
-    </h2> 
+        <h1 style="display: flex; align-items: center; justify-content: center; gap: 10px;">
+            <img src="logo.png" style="height: 40px; width: auto;" alt="Logo">
+            <span>Wes's stash thingy</span>
+        </h1>
+        <h2 style="color: white; text-align: center; margin-bottom: 30px; text-shadow: 2px 2px 4px rgba(0,0,0,0.3); font-weight: normal; font-size: 18px;">
+            Credits to wes and mason for finding the games
+        </h2>
+        <h2 style="color: white; text-align: center; margin-bottom: 30px; text-shadow: 2px 2px 4px rgba(0,0,0,0.3); font-weight: normal; font-size: 18px;">
+            <input type="text" placeholder="Search" id="searchInput" style="padding: 13px; width: 100%; max-width: 420px; border-radius: 8px; border: none; box-shadow: 0 2px 4px rgba(7, 105, 218, 0.1);">
+            <script src="https://cdn.jsdelivr.net/gh/bubbls/ugs-singlefile@main/searchbut.js"></script>
+            <button id="lolbutton" onclick="const script = document.createElement('script');script.src = 'https://cdn.jsdelivr.net/gh/bubbls/ugs-singlefile@latest/game.js';document.body.appendChild(script);">Click to load if it isnt loading</button>
+        </h2> 
 
-        
         <div id="sections-container">  
         </div>
+
+        <footer class="site-footer">
+            Made by Wes • &copy; 2026 Crown Games. All rights reserved. | <a href="privacy.html" class="footer-link-blue">Privacy Policy</a>
+        </footer>
     </div>
+
     <script src="https://cdn.jsdelivr.net/gh/bubbls/ugs-singlefile@main/games.js"></script>
     <script>
         function stripCl(el) {
@@ -196,11 +225,7 @@
                 el.textContent = el.textContent.trimStart().slice(2);
             }
         }
-
-        // Strip any already-rendered buttons
         document.querySelectorAll('input[type="button"], button').forEach(stripCl);
-
-        // Watch for buttons added dynamically by games.js
         const observer = new MutationObserver(mutations => {
             for (const mutation of mutations) {
                 for (const node of mutation.addedNodes) {
@@ -213,5 +238,5 @@
 
         observer.observe(document.body, { childList: true, subtree: true });
     </script>
-   </body> 
-   </html>
+</body> 
+</html>

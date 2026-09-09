@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Privacy Policy - Crown Games</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #2e3244 0%, #36224b 100%);
+            min-height: 100vh;
+            margin: 0;
+            padding: 0;
+            display: flex;
+        }
+
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 80px;
+            height: 100vh;
+            background: rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(10px);
+            padding: 20px 10px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            overflow-y: auto;
+            box-shadow: 2px 0 10px rgba(0,0,0,0.3);
+            z-index: 1000;
+        }
+
+        .sidebar-btn {
+            background: rgb(89, 134, 218);
+            border: none;
+            padding: 12px;
+            font-size: 14px;
+            font-weight: 700;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            color: white;
+            text-align: center;
+            text-decoration: none;
+            min-height: 45px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .sidebar-btn:hover {
+            background: #79aadb;
+            transform: scale(1.05);
+        }
+
+        .main-content {
+            margin-left: 100px;
+            flex: 1;
+            padding: 40px 20px;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            box-sizing: border-box;
+        }
+
+        .policy-container {
+            max-width: 800px;
+            margin: 0 auto;
+            width: 100%;
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(5px);
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+            border: 1px solid rgba(255,255,255,0.05);
+        }
+
+        h1 {
+            color: white;
+            text-align: center;
+            margin-top: 0;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .subtitle {
+            color: rgba(255,255,255,0.6);
+            text-align: center;
+            margin-bottom: 40px;
+            font-size: 16px;
+        }
+
+        h2 {
+            color: white;
+            font-size: 22px;
+            margin-top: 30px;
+            margin-bottom: 15px;
+            padding-bottom: 8px;
+            border-bottom: 2px solid rgba(255,255,255,0.1);
+            text-shadow: 1px 1px 3px rgba(0,0,0,0.2);
+        }
+
+        p, li {
+            color: rgba(255, 255, 255, 0.85);
+            font-size: 15px;
+            line-height: 1.6;
+        }
+
+        ul {
+            padding-left: 20px;
+            margin-bottom: 20px;
+        }
+
+        li {
+            margin-bottom: 8px;
+        }
+
+        .site-footer {
+            text-align: center;
+            color: rgba(255, 255, 255, 0.5);
+            font-size: 14px;
+            padding: 40px 0 10px 0;
+            margin-top: auto;
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 60px;
+                padding: 15px 5px;
+            }
+            .sidebar-btn {
+                font-size: 12px;
+                padding: 8px;
+            }
+            .main-content {
+                margin-left: 70px;
+                padding: 20px 10px;
+            }
+            .policy-container {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="sidebar">
+        <a href="index.html" class="sidebar-btn">Home</a>
+    </div>
+
+    <div class="main-content">
+        <div class="policy-container">
+            <h1>Privacy Policy</h1>
+            <div class="subtitle">Crown Games • Last Updated: 2026</div>
+
+            <h2>1. Information We Collect</h2>
+            <p>At Crown Games, we prioritize keeping your layout clean and fast. We do not require you to create an account or sign up to play. As a result, we do not collect personal identifiers like your name, email address, or phone number.</p>
+
+            <h2>2. Cookies and Local Storage</h2>
+            <p>We may use local data parameters (like browser LocalStorage) solely to remember your preferences, saved game configurations, or high scores locally on your machine. This data remains completely on your device.</p>
+
+            <h2>3. Third-Party Scripts</h2>
+            <p>Our platform loads open-source game assets via content delivery networks (CDNs). These third-party delivery elements may automatically handle standard backend web requests (such as your IP address or browser type) essential to transfer network files to your browser.</p>
+
+            <h2>4. Changes to This Policy</h2>
+            <p>Crown Games reserves the right to modify this statement as functionality grows. Any layout updates or feature upgrades to how storage variables are stored will be directly updated on this page.</p>
+
+            <h2>5. Contact Us</h2>
+            <p>If you have any questions or feedback regarding this privacy setup, please contact the site administration panel.</p>
+        </div>
+        <footer class="site-footer">
+            Made by Wes | Crown Games 2026
+        </footer>
+    </div>
+</body>
+</html>
