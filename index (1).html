@@ -344,6 +344,13 @@
             text-decoration: none;
             display: inline-block;
         }
+        .top-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center;
+            align-items: center;
+        }
         #suggestGamesBtn:hover {
             background: linear-gradient(135deg, rgba(90, 140, 255, 0.55), rgba(140, 90, 240, 0.4));
             box-shadow: 0 6px 18px rgba(80, 120, 255, 0.25);
@@ -444,6 +451,59 @@
             color: #b8d4ff;
         }
 
+
+        .other-sites-section {
+            margin-top: auto;
+            padding-top: 18px;
+            border-top: 1px solid rgba(130, 160, 255, 0.15);
+        }
+        .other-sites-list {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            margin-bottom: 10px;
+        }
+        .other-site-link {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 12px;
+            border-radius: 12px;
+            border: 1px solid transparent;
+            color: #c8d4ff;
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.2s ease;
+            background: transparent;
+        }
+        .other-site-link:hover {
+            background: rgba(80, 120, 255, 0.15);
+            border-color: rgba(120, 160, 255, 0.2);
+            color: white;
+        }
+        .other-site-link img {
+            width: 28px;
+            height: 28px;
+            border-radius: 8px;
+            object-fit: contain;
+            background: rgba(20, 25, 50, 0.8);
+            flex-shrink: 0;
+        }
+        .other-site-link .site-fallback {
+            width: 28px;
+            height: 28px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 13px;
+            font-weight: 700;
+            color: white;
+            background: linear-gradient(135deg, #3a5fd4, #7b4fd4);
+            flex-shrink: 0;
+        }
+
         @media (max-width: 768px) {
             .main-content {
                 padding: 20px 12px 30px;
@@ -504,6 +564,11 @@
         <button class="category-btn" data-category="sports">Sports</button>
         <button class="category-btn" data-category="retro">Retro & Arcade</button>
         <button class="category-btn" data-category="strategy">Strategy</button>
+
+        <div class="other-sites-section">
+            <h3>Other Sites</h3>
+            <div class="other-sites-list" id="otherSitesList"></div>
+        </div>
     </div>
 
     <div class="main-content">
@@ -516,7 +581,9 @@
         </div>
 
         <div class="search-area">
-            <a id="suggestGamesBtn" href="https://docs.google.com/forms/d/e/1FAIpQLSf-uFCzfquDcTrgAQ2Oo6rZA6vUGX338duyJzk6AKo7G0VVfQ/viewform?usp=publish-editor" target="_blank" rel="noopener noreferrer">Suggest Games</a>
+            <div class="top-actions">
+                <a id="suggestGamesBtn" href="https://docs.google.com/forms/d/e/1FAIpQLSf-uFCzfquDcTrgAQ2Oo6rZA6vUGX338duyJzk6AKo7G0VVfQ/viewform?usp=publish-editor" target="_blank" rel="noopener noreferrer">Suggest Games</a>
+</div>
             <input type="text" placeholder="Search games..." id="searchInput">
             <script src="https://cdn.jsdelivr.net/gh/bubbls/ugs-singlefile@main/searchbut.js"></script>
             <button id="lolbutton" onclick="const script = document.createElement('script');script.src = 'https://cdn.jsdelivr.net/gh/bubbls/ugs-singlefile@latest/game.js';document.body.appendChild(script);">
@@ -534,6 +601,7 @@
 
     <script src="https://cdn.jsdelivr.net/gh/bubbls/ugs-singlefile@main/games.js"></script>
     <script>
+
         const categoryKeywords = {
             action: ['shoot', 'gun', 'war', 'battle', 'fight', 'combat', 'doom', 'bullet', 'zombie', 'kill', 'assassin', 'strike'],
             puzzle: ['puzzle', '2048', 'match', 'block', 'sudoku', 'brain', 'logic', 'tetris', 'slide'],
@@ -633,6 +701,54 @@
             }
         });
         observer.observe(document.body, { childList: true, subtree: true });
+
+        const OTHER_SITES = [
+            { name: "Class 6x", logo: "class6x.gitlab.io\\assets\\img\\logo-class6x.png", path: "class6x.gitlab.io\\index.html" },
+            { name: "Gn-Math", logo: "gn-math\\favicon.png", path: "gn-math\\index.html" },
+        ];
+
+        function makeSiteFallback(name) {
+            const d = document.createElement('div');
+            d.className = 'site-fallback';
+            const m = String(name || '?').match(/[a-zA-Z0-9]/);
+            d.textContent = (m ? m[0] : '?').toUpperCase();
+            return d;
+        }
+
+        function renderOtherSites() {
+            const listEl = document.getElementById('otherSitesList');
+            if (!listEl) return;
+            listEl.innerHTML = '';
+            OTHER_SITES.forEach(site => {
+                if (!site || !site.path) return;
+                const a = document.createElement('a');
+                a.className = 'other-site-link';
+                a.href = site.path;
+                a.target = '_blank';
+                a.rel = 'noopener noreferrer';
+                a.title = site.name || 'Site';
+
+                if (site.logo) {
+                    const img = document.createElement('img');
+                    img.src = site.logo;
+                    img.alt = '';
+                    img.onerror = function () {
+                        img.replaceWith(makeSiteFallback(site.name));
+                    };
+                    a.appendChild(img);
+                } else {
+                    a.appendChild(makeSiteFallback(site.name));
+                }
+
+                const span = document.createElement('span');
+                span.textContent = site.name || 'Untitled';
+                a.appendChild(span);
+                listEl.appendChild(a);
+            });
+        }
+
+        renderOtherSites();
+
     </script>
 </body>
 </html>
