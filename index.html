@@ -330,6 +330,26 @@
             box-shadow: 0 0 0 3px rgba(100, 140, 255, 0.12);
         }
 
+
+        #suggestGamesBtn {
+            background: linear-gradient(135deg, rgba(70, 120, 255, 0.35), rgba(120, 80, 220, 0.3));
+            border: 1px solid rgba(140, 170, 255, 0.4);
+            color: #eef2ff;
+            padding: 11px 22px;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            text-decoration: none;
+            display: inline-block;
+        }
+        #suggestGamesBtn:hover {
+            background: linear-gradient(135deg, rgba(90, 140, 255, 0.55), rgba(140, 90, 240, 0.4));
+            box-shadow: 0 6px 18px rgba(80, 120, 255, 0.25);
+            color: white;
+        }
+
         #lolbutton {
             background: rgba(70, 110, 220, 0.18);
             border: 1px solid rgba(110, 150, 255, 0.3);
@@ -496,6 +516,7 @@
         </div>
 
         <div class="search-area">
+            <a id="suggestGamesBtn" href="https://docs.google.com/forms/d/e/1FAIpQLSf-uFCzfquDcTrgAQ2Oo6rZA6vUGX338duyJzk6AKo7G0VVfQ/viewform?usp=publish-editor" target="_blank" rel="noopener noreferrer">Suggest Games</a>
             <input type="text" placeholder="Search games..." id="searchInput">
             <script src="https://cdn.jsdelivr.net/gh/bubbls/ugs-singlefile@main/searchbut.js"></script>
             <button id="lolbutton" onclick="const script = document.createElement('script');script.src = 'https://cdn.jsdelivr.net/gh/bubbls/ugs-singlefile@latest/game.js';document.body.appendChild(script);">
