@@ -88,30 +88,113 @@
         }
 
         body.has-site-image .header h1 {
-            color: #000 !important;
-            text-shadow: 0 1px 2px rgba(255,255,255,0.55);
+            color: var(--text) !important;
+            text-shadow: 0 1px 4px rgba(0,0,0,0.7);
         }
 
         body.has-site-image .credits {
-            color: #111 !important;
-            text-shadow: 0 1px 2px rgba(255,255,255,0.45);
+            color: var(--text3) !important;
+            text-shadow: 0 1px 3px rgba(0,0,0,0.6);
         }
 
         body.has-site-image input[type="button"] {
             background: var(--theme-btn-bg, var(--bg3)) !important;
             border-color: var(--border2) !important;
-            color: var(--theme-btn-text, #000) !important;
+            color: var(--theme-btn-text, var(--text2)) !important;
         }
 
         body.has-site-image input[type="button"]:hover {
             background: var(--theme-btn-hover, var(--btn-hover)) !important;
-            border-color: var(--text3) !important;
-            color: var(--theme-btn-text, #000) !important;
+            border-color: var(--border2) !important;
+            color: var(--text) !important;
         }
 
         body.has-site-image .categories-panel,
         body.has-site-image .settings-panel {
             background: var(--bg2) !important;
+            border-color: var(--border) !important;
+        }
+
+        body.has-site-image .menu-toggle,
+        body.has-site-image .settings-toggle {
+            background: var(--bg2) !important;
+            border-color: var(--border2) !important;
+        }
+
+        body.has-site-image .menu-toggle span {
+            background: var(--text) !important;
+        }
+
+        body.has-site-image #searchInput {
+            background: var(--bg3) !important;
+            border-color: var(--border2) !important;
+            color: var(--text) !important;
+        }
+
+        body.has-site-image #searchInput::placeholder {
+            color: var(--text5) !important;
+        }
+
+        body.has-site-image .category-btn {
+            color: var(--text3) !important;
+        }
+
+        body.has-site-image .category-btn:hover {
+            background: var(--bg3) !important;
+            color: var(--text2) !important;
+        }
+
+        body.has-site-image .category-btn.active {
+            background: var(--text) !important;
+            color: var(--bg) !important;
+        }
+
+        body.has-site-image .letter-header {
+            color: var(--text5) !important;
+            border-color: var(--border) !important;
+        }
+
+        body.has-site-image .site-footer {
+            color: var(--text5) !important;
+            border-color: var(--border) !important;
+        }
+
+        body.has-site-image .theme-btn,
+        body.has-site-image .particle-toggle-btn,
+        body.has-site-image .cloak-input,
+        body.has-site-image .cloak-select,
+        body.has-site-image .cloak-preset-btn {
+            background: var(--bg3) !important;
+            border-color: var(--border2) !important;
+            color: var(--text3) !important;
+        }
+
+        body.has-site-image .theme-btn.active,
+        body.has-site-image .particle-toggle-btn.active {
+            background: var(--text) !important;
+            color: var(--bg) !important;
+            border-color: var(--text) !important;
+        }
+
+        body.has-site-image .settings-clock {
+            background: var(--bg3) !important;
+            border-color: var(--border2) !important;
+        }
+
+        body.has-site-image .settings-clock-time {
+            color: var(--text) !important;
+        }
+
+        body.has-site-image #suggestGamesBtn {
+            background: var(--text) !important;
+            border-color: var(--text) !important;
+            color: var(--bg) !important;
+        }
+
+        body.has-site-image #lolbutton {
+            background: var(--bg3) !important;
+            border-color: var(--border2) !important;
+            color: var(--text3) !important;
         }
 
         /* ── Menu toggle (left) ─────────────────────────────────── */
@@ -1293,9 +1376,12 @@
         let particlesEnabled = true; // always on for Default
         let siteType = localStorage.getItem('wes_site_type') || 'default';
 
-        // Add image themes here. name = dropdown label, image = png path
         const SITE_IMAGE_THEMES = [
-            { id: 'Femboy', name: 'Femboy', image: 'femboy.png' },
+            // forcePalette: skip image extraction, always use this color
+            // gif: true lets the background animate (CSS background-image handles it natively)
+            { id: 'Femboy', name: 'Femboy', image: 'femboy.png', forcePalette: { r: 240, g: 175, b: 195 } },
+            { id: 'Logan',  name: 'Logan',  image: 'logan.png',  fallback:     { r: 195, g: 148, b: 90  } },
+            { id: 'Hacker',  name: 'Hacker',  image: '200.webp',  fallback: { r: 30, g: 180, b: 60 } },
         ];
 
         function effectsAllowed() {
@@ -1341,31 +1427,110 @@
 
         function ensureReadableSurface(col) {
             const lum = (col.r * 0.299 + col.g * 0.587 + col.b * 0.114);
+            // Too dark — lift it into a usable range
             if (lum < 50) return mixRgb(col, { r: 90, g: 85, b: 110 }, 0.6);
             return col;
         }
 
+        // For light/pastel source colors the standard dark-bg palette feels wrong.
+        // Returns true when the source rgb is a light pastel (lum > 160).
+        function isLightPastel(col) {
+            return (col.r * 0.299 + col.g * 0.587 + col.b * 0.114) > 160;
+        }
+
+        function rgbToHsl(r, g, b) {
+            r /= 255; g /= 255; b /= 255;
+            const max = Math.max(r, g, b), min = Math.min(r, g, b);
+            let h, s, l = (max + min) / 2;
+            if (max === min) { h = s = 0; }
+            else {
+                const d = max - min;
+                s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+                switch (max) {
+                    case r: h = (g - b) / d + (g < b ? 6 : 0); break;
+                    case g: h = (b - r) / d + 2; break;
+                    default: h = (r - g) / d + 4;
+                }
+                h /= 6;
+            }
+            return { h, s, l };
+        }
+
+        function hslToRgb(h, s, l) {
+            let r, g, b;
+            if (s === 0) { r = g = b = l; }
+            else {
+                const hue2rgb = (p, q, t) => {
+                    if (t < 0) t += 1;
+                    if (t > 1) t -= 1;
+                    if (t < 1/6) return p + (q - p) * 6 * t;
+                    if (t < 1/2) return q;
+                    if (t < 2/3) return p + (q - p) * (2/3 - t) * 6;
+                    return p;
+                };
+                const q = l < 0.5 ? l * (1 + s) : l + s - l * s;
+                const p = 2 * l - q;
+                r = hue2rgb(p, q, h + 1/3);
+                g = hue2rgb(p, q, h);
+                b = hue2rgb(p, q, h - 1/3);
+            }
+            return { r: clampByte(r * 255), g: clampByte(g * 255), b: clampByte(b * 255) };
+        }
+
         function paletteFromRgb(avg) {
             const base = ensureReadableSurface(avg);
-            const soft = mixRgb(base, { r: 255, g: 255, b: 255 }, 0.22);
-            const deep = mixRgb(base, { r: 0, g: 0, b: 0 }, 0.3);
-            const panel = mixRgb(base, { r: 18, g: 16, b: 28 }, 0.32);
-            const panel2 = mixRgb(base, { r: 255, g: 255, b: 255 }, 0.08);
-            const panel3 = mixRgb(base, { r: 255, g: 255, b: 255 }, 0.16);
-            const border = mixRgb(base, { r: 255, g: 255, b: 255 }, 0.28);
+            const hsl = rgbToHsl(base.r, base.g, base.b);
+            const hue = hsl.h;
+            const sat = Math.max(0.25, Math.min(0.75, hsl.s * 1.4));
+            const light = isLightPastel(avg);
+
+            let bgRgb, bg2Rgb, bg3Rgb, brdRgb, brd2Rgb, t3Rgb, t4Rgb, t5Rgb, btnRgb, btnHRgb;
+            let textMain, text2;
+
+            if (light) {
+                // Light pastel palette — panels are soft tinted whites, text is dark
+                bgRgb   = hslToRgb(hue, sat * 0.30, 0.88);
+                bg2Rgb  = hslToRgb(hue, sat * 0.28, 0.82);
+                bg3Rgb  = hslToRgb(hue, sat * 0.25, 0.76);
+                brdRgb  = hslToRgb(hue, sat * 0.35, 0.68);
+                brd2Rgb = hslToRgb(hue, sat * 0.40, 0.60);
+                t3Rgb   = hslToRgb(hue, sat * 0.60, 0.30);
+                t4Rgb   = hslToRgb(hue, sat * 0.45, 0.42);
+                t5Rgb   = hslToRgb(hue, sat * 0.30, 0.55);
+                btnRgb  = hslToRgb(hue, sat * 0.38, 0.72);
+                btnHRgb = hslToRgb(hue, sat * 0.42, 0.65);
+                textMain = '#1a1018';
+                text2    = '#2e1f28';
+            } else {
+                // Dark palette — original behaviour
+                bgRgb   = hslToRgb(hue, sat * 0.55, 0.07);
+                bg2Rgb  = hslToRgb(hue, sat * 0.50, 0.13);
+                bg3Rgb  = hslToRgb(hue, sat * 0.45, 0.19);
+                brdRgb  = hslToRgb(hue, sat * 0.40, 0.26);
+                brd2Rgb = hslToRgb(hue, sat * 0.45, 0.33);
+                t3Rgb   = hslToRgb(hue, sat * 0.55, 0.72);
+                t4Rgb   = hslToRgb(hue, sat * 0.40, 0.52);
+                t5Rgb   = hslToRgb(hue, sat * 0.30, 0.38);
+                btnRgb  = hslToRgb(hue, sat * 0.48, 0.22);
+                btnHRgb = hslToRgb(hue, sat * 0.52, 0.29);
+                textMain = '#f7f5fc';
+                text2    = '#ece9f6';
+            }
+
             return {
-                bg: rgbToHex(deep.r, deep.g, deep.b),
-                bg2: rgbToHex(panel.r, panel.g, panel.b),
-                bg3: rgbToHex(panel2.r, panel2.g, panel2.b),
-                border: rgbToHex(mixRgb(panel, border, 0.4).r, mixRgb(panel, border, 0.4).g, mixRgb(panel, border, 0.4).b),
-                border2: rgbToHex(border.r, border.g, border.b),
-                text: '#f5f5f8',
-                text2: '#ebebf2',
-                text3: rgbToHex(soft.r, soft.g, soft.b),
-                text4: rgbToHex(mixRgb(soft, { r: 0, g: 0, b: 0 }, 0.2).r, mixRgb(soft, { r: 0, g: 0, b: 0 }, 0.2).g, mixRgb(soft, { r: 0, g: 0, b: 0 }, 0.2).b),
-                text5: rgbToHex(mixRgb(base, { r: 0, g: 0, b: 0 }, 0.4).r, mixRgb(base, { r: 0, g: 0, b: 0 }, 0.4).g, mixRgb(base, { r: 0, g: 0, b: 0 }, 0.4).b),
-                btn: rgbToHex(panel3.r, panel3.g, panel3.b),
-                btnHover: rgbToHex(mixRgb(panel3, { r: 255, g: 255, b: 255 }, 0.18).r, mixRgb(panel3, { r: 255, g: 255, b: 255 }, 0.18).g, mixRgb(panel3, { r: 255, g: 255, b: 255 }, 0.18).b)
+                bg:      rgbToHex(bgRgb.r,   bgRgb.g,   bgRgb.b),
+                bg2:     rgbToHex(bg2Rgb.r,  bg2Rgb.g,  bg2Rgb.b),
+                bg3:     rgbToHex(bg3Rgb.r,  bg3Rgb.g,  bg3Rgb.b),
+                border:  rgbToHex(brdRgb.r,  brdRgb.g,  brdRgb.b),
+                border2: rgbToHex(brd2Rgb.r, brd2Rgb.g, brd2Rgb.b),
+                text:    textMain,
+                text2:   text2,
+                text3:   rgbToHex(t3Rgb.r,   t3Rgb.g,   t3Rgb.b),
+                text4:   rgbToHex(t4Rgb.r,   t4Rgb.g,   t4Rgb.b),
+                text5:   rgbToHex(t5Rgb.r,   t5Rgb.g,   t5Rgb.b),
+                btn:     rgbToHex(btnRgb.r,  btnRgb.g,  btnRgb.b),
+                btnHover:rgbToHex(btnHRgb.r, btnHRgb.g, btnHRgb.b),
+                _hue: hue, _sat: sat, _light: light
             };
         }
 
@@ -1435,25 +1600,60 @@
             const btnBg = cols.btn || cols.bg3;
             document.documentElement.style.setProperty('--theme-btn-bg', btnBg);
             document.documentElement.style.setProperty('--theme-btn-hover', cols.btnHover || cols.bg2);
-            // Black text for readability unless the button itself is very dark
+            // Pick btn text based on actual button surface luminance
             const rgb = hexToRgb(btnBg);
-            let btnText = '#000000';
+            let btnText = cols.text || '#f7f5fc';
             if (rgb) {
                 const lum = (rgb.r * 0.299 + rgb.g * 0.587 + rgb.b * 0.114);
-                if (lum < 70) btnText = '#ffffff';
+                btnText = lum > 140 ? (cols._light ? '#1a1018' : '#111111') : (cols.text2 || '#ece9f6');
             }
             document.documentElement.style.setProperty('--theme-btn-text', btnText);
         }
 
-        function applyImageTheme(imagePath) {
+        function applyPaletteAndOverlay(palette) {
+            applyThemeColors(palette);
+            if (palette._hue !== undefined) {
+                // Light pastels: very faint white-tinted wash so the image stays vivid
+                // Dark themes: deeper dark tint to ground the UI
+                if (palette._light) {
+                    const tintRgb = hslToRgb(palette._hue, palette._sat * 0.3, 0.92);
+                    document.body.style.setProperty(
+                        '--site-overlay',
+                        'rgba(' + tintRgb.r + ',' + tintRgb.g + ',' + tintRgb.b + ',0.18)'
+                    );
+                } else {
+                    const tintRgb = hslToRgb(palette._hue, Math.min(0.6, palette._sat * 1.1), 0.06);
+                    document.body.style.setProperty(
+                        '--site-overlay',
+                        'rgba(' + tintRgb.r + ',' + tintRgb.g + ',' + tintRgb.b + ',0.38)'
+                    );
+                }
+            }
+        }
+
+        // imagePath  — path/url to the background file (png, jpg, gif, webp, etc.)
+        // themeOpts  — { forcePalette, fallback } from SITE_IMAGE_THEMES entry
+        function applyImageTheme(imagePath, themeOpts) {
             if (!imagePath) return;
+            themeOpts = themeOpts || {};
             clearSitePresetVars();
             document.body.classList.remove('light');
             document.body.classList.add('has-site-image');
+            // Works for all formats — GIFs animate natively via CSS background-image
             document.body.style.setProperty('--site-image', 'url("' + String(imagePath).replace(/"/g, '') + '")');
             document.body.style.setProperty('--site-overlay', 'transparent');
+
+            // forcePalette: skip image extraction entirely, use defined color
+            if (themeOpts.forcePalette) {
+                applyPaletteAndOverlay(paletteFromRgb(themeOpts.forcePalette));
+                updateEffectsVisibility();
+                return;
+            }
+
+            // Otherwise try to extract from the image, fall back to theme fallback or generic purple
+            const fallbackRgb = themeOpts.fallback || { r: 150, g: 110, b: 140 };
             extractColorsFromImage(imagePath, function (cols) {
-                applyThemeColors(cols || paletteFromRgb({ r: 150, g: 110, b: 140 }));
+                applyPaletteAndOverlay(cols || paletteFromRgb(fallbackRgb));
             });
             updateEffectsVisibility();
         }
@@ -1472,7 +1672,7 @@
             }
 
             const theme = SITE_IMAGE_THEMES.find(function (t) { return t.id === siteType; });
-            if (theme && theme.image) applyImageTheme(theme.image);
+            if (theme && theme.image) applyImageTheme(theme.image, theme);
             else {
                 clearSitePresetVars();
                 updateEffectsVisibility();
