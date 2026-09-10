@@ -100,13 +100,13 @@
         body.has-site-image input[type="button"] {
             background: var(--theme-btn-bg, var(--bg3)) !important;
             border-color: var(--border2) !important;
-            color: var(--text) !important;
+            color: var(--theme-btn-text, #000) !important;
         }
 
         body.has-site-image input[type="button"]:hover {
             background: var(--theme-btn-hover, var(--btn-hover)) !important;
             border-color: var(--text3) !important;
-            color: var(--text) !important;
+            color: var(--theme-btn-text, #000) !important;
         }
 
         body.has-site-image .categories-panel,
@@ -1408,6 +1408,16 @@
             tryLoad(isRemote);
         }
 
+        function hexToRgb(hex) {
+            const h = String(hex || '').replace('#', '');
+            if (h.length !== 6) return null;
+            return {
+                r: parseInt(h.slice(0, 2), 16),
+                g: parseInt(h.slice(2, 4), 16),
+                b: parseInt(h.slice(4, 6), 16)
+            };
+        }
+
         function applyThemeColors(cols) {
             if (!cols) return;
             document.documentElement.style.setProperty('--bg', cols.bg);
@@ -1422,8 +1432,17 @@
             document.documentElement.style.setProperty('--text5', cols.text5);
             document.documentElement.style.setProperty('--btn-hover', cols.btnHover || cols.bg3);
             document.documentElement.style.setProperty('--sidebar-hover', cols.bg3);
-            document.documentElement.style.setProperty('--theme-btn-bg', cols.btn || cols.bg3);
+            const btnBg = cols.btn || cols.bg3;
+            document.documentElement.style.setProperty('--theme-btn-bg', btnBg);
             document.documentElement.style.setProperty('--theme-btn-hover', cols.btnHover || cols.bg2);
+            // Black text for readability unless the button itself is very dark
+            const rgb = hexToRgb(btnBg);
+            let btnText = '#000000';
+            if (rgb) {
+                const lum = (rgb.r * 0.299 + rgb.g * 0.587 + rgb.b * 0.114);
+                if (lum < 70) btnText = '#ffffff';
+            }
+            document.documentElement.style.setProperty('--theme-btn-text', btnText);
         }
 
         function applyImageTheme(imagePath) {
