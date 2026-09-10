@@ -69,6 +69,24 @@
             height: 100%;
         }
 
+        body.has-site-image {
+            background-color: var(--bg);
+            background-image: var(--site-image);
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            background-repeat: no-repeat;
+        }
+
+        body.has-site-image::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            z-index: 0;
+            pointer-events: none;
+            background: var(--site-overlay, rgba(0,0,0,0.55));
+        }
+
         /* ── Menu toggle (left) ─────────────────────────────────── */
         .menu-toggle {
             position: fixed;
@@ -892,11 +910,11 @@
             </div>
         </div>
 
-        <div class="settings-section">
-            <div class="settings-label">Background</div>
-            <div class="particle-toggle-row">
-                <button class="particle-toggle-btn active" id="particleOnBtn" onclick="setParticles(true)">On</button>
-                <button class="particle-toggle-btn" id="particleOffBtn" onclick="setParticles(false)">Off</button>
+                <div class="settings-section">
+            <div class="settings-label">Site Type</div>
+            <div class="cloak-field" style="margin-bottom:0;">
+                <label for="siteTypeSelect">Theme</label>
+                <select class="cloak-select" id="siteTypeSelect"></select>
             </div>
         </div>
 
@@ -1244,15 +1262,168 @@
             setTimeout(hideLoader, MAX_MS);
         })();
 
-        // ── Particle toggle ───────────────────────────────────────────────────────
-        let particlesEnabled = true;
-        function setParticles(enabled) {
-            particlesEnabled = enabled;
-            const canvas = document.getElementById('particleCanvas');
-            if (canvas) canvas.style.opacity = enabled ? '1' : '0';
-            document.getElementById('particleOnBtn').classList.toggle('active', enabled);
-            document.getElementById('particleOffBtn').classList.toggle('active', !enabled);
+
+        let particlesEnabled = true; // always on for Default
+        let siteType = localStorage.getItem('wes_site_type') || 'default';
+
+        // Add image themes here. name = dropdown label, image = png path
+        const SITE_IMAGE_THEMES = [
+            { id: 'Femboy', name: 'Femboy', image: 'femboy.png' },
+        ];
+
+        function effectsAllowed() {
+            return siteType === 'default';
         }
+
+        function updateEffectsVisibility() {
+            const canvas = document.getElementById('particleCanvas');
+            if (!canvas) return;
+
+            const show = effectsAllowed();
+            particlesEnabled = show;
+            canvas.style.opacity = show ? '1' : '0';
+            canvas.style.visibility = show ? 'visible' : 'hidden';
+        }
+
+        function clearSitePresetVars() {
+            ['--bg','--bg2','--bg3','--border','--border2','--text','--text2','--text3','--text4','--text5','--btn-hover','--sidebar-hover'].forEach(function (k) {
+                document.documentElement.style.removeProperty(k);
+            });
+            document.body.classList.remove('has-site-image');
+            document.body.style.removeProperty('--site-image');
+            document.body.style.removeProperty('--site-overlay');
+        }
+
+        function rgbToHex(r, g, b) {
+            return '#' + [r, g, b].map(function (v) {
+                return Math.max(0, Math.min(255, v | 0)).toString(16).padStart(2, '0');
+            }).join('');
+        }
+
+        function extractColorsFromImage(url, cb) {
+            const img = new Image();
+            img.crossOrigin = 'anonymous';
+            img.onload = function () {
+                try {
+                    const c = document.createElement('canvas');
+                    c.width = 64; c.height = 64;
+                    const x = c.getContext('2d');
+                    x.drawImage(img, 0, 0, 64, 64);
+                    const data = x.getImageData(0, 0, 64, 64).data;
+                    let r = 0, g = 0, b = 0, n = 0, r2 = 0, g2 = 0, b2 = 0, n2 = 0;
+                    for (let i = 0; i < data.length; i += 4) {
+                        if (data[i + 3] < 128) continue;
+                        const pr = data[i], pg = data[i + 1], pb = data[i + 2];
+                        const lum = (pr + pg + pb) / 3;
+                        r += pr; g += pg; b += pb; n++;
+                        if (lum > 40 && lum < 220) { r2 += pr; g2 += pg; b2 += pb; n2++; }
+                    }
+                    if (!n) { cb(null); return; }
+                    const avg = { r: (r / n) | 0, g: (g / n) | 0, b: (b / n) | 0 };
+                    const mid = n2 ? { r: (r2 / n2) | 0, g: (g2 / n2) | 0, b: (b2 / n2) | 0 } : avg;
+                    const darken = function (col, f) {
+                        return { r: (col.r * f) | 0, g: (col.g * f) | 0, b: (col.b * f) | 0 };
+                    };
+                    const lighten = function (col, f) {
+                        return {
+                            r: Math.min(255, (col.r + (255 - col.r) * f) | 0),
+                            g: Math.min(255, (col.g + (255 - col.g) * f) | 0),
+                            b: Math.min(255, (col.b + (255 - col.b) * f) | 0)
+                        };
+                    };
+                    const bg = darken(avg, 0.25);
+                    const bg2 = darken(avg, 0.38);
+                    const bg3 = darken(mid, 0.48);
+                    const text = lighten(avg, 0.88);
+                    const text2 = lighten(mid, 0.7);
+                    cb({
+                        bg: rgbToHex(bg.r, bg.g, bg.b),
+                        bg2: rgbToHex(bg2.r, bg2.g, bg2.b),
+                        bg3: rgbToHex(bg3.r, bg3.g, bg3.b),
+                        border: rgbToHex(darken(mid, 0.55).r, darken(mid, 0.55).g, darken(mid, 0.55).b),
+                        border2: rgbToHex(darken(mid, 0.7).r, darken(mid, 0.7).g, darken(mid, 0.7).b),
+                        text: rgbToHex(text.r, text.g, text.b),
+                        text2: rgbToHex(text2.r, text2.g, text2.b),
+                        text3: rgbToHex(lighten(mid, 0.4).r, lighten(mid, 0.4).g, lighten(mid, 0.4).b),
+                        text4: rgbToHex(lighten(mid, 0.22).r, lighten(mid, 0.22).g, lighten(mid, 0.22).b),
+                        text5: rgbToHex(darken(mid, 0.72).r, darken(mid, 0.72).g, darken(mid, 0.72).b)
+                    });
+                } catch (_) { cb(null); }
+            };
+            img.onerror = function () { cb(null); };
+            img.src = url;
+        }
+
+        function applyImageTheme(imagePath) {
+            if (!imagePath) return;
+            clearSitePresetVars();
+            document.body.classList.remove('light');
+            document.body.classList.add('has-site-image');
+            document.body.style.setProperty('--site-image', 'url("' + String(imagePath).replace(/"/g, '') + '")');
+            document.body.style.setProperty('--site-overlay', 'transparent');
+            extractColorsFromImage(imagePath, function (cols) {
+                if (!cols) return;
+                document.documentElement.style.setProperty('--bg', cols.bg);
+                document.documentElement.style.setProperty('--bg2', cols.bg2);
+                document.documentElement.style.setProperty('--bg3', cols.bg3);
+                document.documentElement.style.setProperty('--border', cols.border);
+                document.documentElement.style.setProperty('--border2', cols.border2);
+                document.documentElement.style.setProperty('--text', cols.text);
+                document.documentElement.style.setProperty('--text2', cols.text2);
+                document.documentElement.style.setProperty('--text3', cols.text3);
+                document.documentElement.style.setProperty('--text4', cols.text4);
+                document.documentElement.style.setProperty('--text5', cols.text5);
+                document.documentElement.style.setProperty('--btn-hover', cols.bg3);
+                document.documentElement.style.setProperty('--sidebar-hover', cols.bg2);
+            });
+            updateEffectsVisibility();
+        }
+
+        function setSiteType(type) {
+            siteType = type || 'default';
+            localStorage.setItem('wes_site_type', siteType);
+            const sel = document.getElementById('siteTypeSelect');
+            if (sel) sel.value = siteType;
+
+            if (siteType === 'default') {
+                clearSitePresetVars();
+                setTheme(localStorage.getItem('wes_theme') || 'dark');
+                updateEffectsVisibility();
+                return;
+            }
+
+            const theme = SITE_IMAGE_THEMES.find(function (t) { return t.id === siteType; });
+            if (theme && theme.image) applyImageTheme(theme.image);
+            else {
+                clearSitePresetVars();
+                updateEffectsVisibility();
+            }
+        }
+
+        function buildSiteTypeSelect() {
+            const sel = document.getElementById('siteTypeSelect');
+            if (!sel) return;
+            sel.innerHTML = '';
+            const def = document.createElement('option');
+            def.value = 'default';
+            def.textContent = 'Default';
+            sel.appendChild(def);
+            SITE_IMAGE_THEMES.forEach(function (t) {
+                if (!t || !t.id) return;
+                const opt = document.createElement('option');
+                opt.value = t.id;
+                opt.textContent = t.name || t.id;
+                sel.appendChild(opt);
+            });
+            if (![...sel.options].some(function (o) { return o.value === siteType; })) siteType = 'default';
+            sel.value = siteType;
+            sel.addEventListener('change', function () { setSiteType(sel.value); });
+        }
+
+        (function initSiteType() {
+            buildSiteTypeSelect();
+            setTimeout(function () { setSiteType(siteType); }, 0);
+        })();
 
         // ── Tab cloak ─────────────────────────────────────────────────────────────
         let cloakEnabled = localStorage.getItem('wes_cloak') === 'true';
@@ -1412,153 +1583,110 @@
 
     </script>
     <script>
-        // ── Particle network background — cursor-reactive ─────────────────────────
+        // ── Background: network (lines + dots) — auto on Default, off on image themes ──
         (function () {
             const canvas = document.getElementById('particleCanvas');
+            if (!canvas) return;
             const ctx = canvas.getContext('2d');
-
-            const PARTICLE_COUNT = 88;
-            const MAX_DIST       = 148;
-            const SPEED          = 0.38;
-            const DOT_RADIUS     = 1.8;
-            const LINE_MAX_ALPHA = 0.18;
-            const CURSOR_ATTRACT_DIST = 180; // px — particles get pulled toward cursor within this radius
-            const CURSOR_ATTRACT_STR  = 0.012; // pull strength
-
-            let W, H, particles = [], raf;
+            let W, H, items = [], raf;
             let mouseX = -9999, mouseY = -9999;
 
-            // Track cursor
-            window.addEventListener('mousemove', e => {
-                mouseX = e.clientX;
-                mouseY = e.clientY;
-            });
-            window.addEventListener('mouseleave', () => {
-                mouseX = -9999;
-                mouseY = -9999;
-            });
+            window.addEventListener('mousemove', e => { mouseX = e.clientX; mouseY = e.clientY; });
+            window.addEventListener('mouseleave', () => { mouseX = -9999; mouseY = -9999; });
 
             function resize() {
-                W = canvas.width  = window.innerWidth;
+                W = canvas.width = window.innerWidth;
                 H = canvas.height = window.innerHeight;
             }
-
-            function Particle() {
-                this.x  = Math.random() * W;
-                this.y  = Math.random() * H;
-                this.vx = (Math.random() - 0.5) * SPEED * 2;
-                this.vy = (Math.random() - 0.5) * SPEED * 2;
-                if (Math.abs(this.vx) < 0.08) this.vx = this.vx < 0 ? -0.08 : 0.08;
-                if (Math.abs(this.vy) < 0.08) this.vy = this.vy < 0 ? -0.08 : 0.08;
-            }
-
-            Particle.prototype.update = function () {
-                // Cursor attraction
-                const dx = mouseX - this.x;
-                const dy = mouseY - this.y;
-                const dist = Math.sqrt(dx * dx + dy * dy);
-                if (dist < CURSOR_ATTRACT_DIST && dist > 1) {
-                    const force = (1 - dist / CURSOR_ATTRACT_DIST) * CURSOR_ATTRACT_STR;
-                    this.vx += (dx / dist) * force;
-                    this.vy += (dy / dist) * force;
-                }
-
-                // Speed cap so cursor attraction doesn't snowball
-                const speed = Math.sqrt(this.vx * this.vx + this.vy * this.vy);
-                const maxSpeed = SPEED * 4;
-                if (speed > maxSpeed) {
-                    this.vx = (this.vx / speed) * maxSpeed;
-                    this.vy = (this.vy / speed) * maxSpeed;
-                }
-
-                this.x += this.vx;
-                this.y += this.vy;
-
-                if (this.x < 0)  { this.x = 0;  this.vx *= -1; }
-                if (this.x > W)  { this.x = W;  this.vx *= -1; }
-                if (this.y < 0)  { this.y = 0;  this.vy *= -1; }
-                if (this.y > H)  { this.y = H;  this.vy *= -1; }
-            };
-
-            function getLineColor() {
-                // Read from CSS variable so it respects dark/light mode
-                const isLight = document.body.classList.contains('light');
-                return isLight ? '0,0,0' : '255,255,255';
-            }
-
-            function getDotColor() {
-                const isLight = document.body.classList.contains('light');
-                return isLight ? 'rgba(0,0,0,0.35)' : 'rgba(255,255,255,0.55)';
-            }
+            function isLight() { return document.body.classList.contains('light'); }
+            function baseRGB() { return isLight() ? '0,0,0' : '255,255,255'; }
 
             function init() {
-                particles = [];
-                for (let i = 0; i < PARTICLE_COUNT; i++) particles.push(new Particle());
+                items = [];
+                const area = Math.max(1, (W * H) / 12000);
+                const count = Math.min(200, Math.max(90, Math.floor(area * 12)));
+                for (let i = 0; i < count; i++) {
+                    items.push({
+                        x: Math.random() * W, y: Math.random() * H,
+                        vx: (Math.random() - 0.5) * 0.65, vy: (Math.random() - 0.5) * 0.65,
+                        r: Math.random() * 1.8 + 0.6, a: Math.random() * 0.35 + 0.25,
+                        bright: Math.random() < 0.12
+                    });
+                }
             }
 
             function draw() {
-                if (!particlesEnabled) {
+                ctx.clearRect(0, 0, W, H);
+                const allowed = (typeof effectsAllowed === 'function') ? effectsAllowed() : true;
+                if (!allowed) {
                     raf = requestAnimationFrame(draw);
                     return;
                 }
-
-                ctx.clearRect(0, 0, W, H);
-
-                for (let i = 0; i < particles.length; i++) particles[i].update();
-
-                const rgb = getLineColor();
-
-                // Draw lines between close particles
-                for (let i = 0; i < particles.length; i++) {
-                    const a = particles[i];
-                    for (let j = i + 1; j < particles.length; j++) {
-                        const b = particles[j];
-                        const dx = a.x - b.x;
-                        const dy = a.y - b.y;
-                        const dist = Math.sqrt(dx * dx + dy * dy);
-                        if (dist > MAX_DIST) continue;
-                        const alpha = LINE_MAX_ALPHA * (1 - dist / MAX_DIST);
-                        ctx.beginPath();
-                        ctx.moveTo(a.x, a.y);
-                        ctx.lineTo(b.x, b.y);
-                        ctx.strokeStyle = `rgba(${rgb},${alpha.toFixed(3)})`;
-                        ctx.lineWidth = 0.8;
-                        ctx.stroke();
-                    }
-                }
-
-                // Draw lines from particles near cursor to cursor position
-                for (let i = 0; i < particles.length; i++) {
-                    const p = particles[i];
-                    const dx = mouseX - p.x;
-                    const dy = mouseY - p.y;
+                const rgb = baseRGB();
+                const maxDist = 175;
+                for (let i = 0; i < items.length; i++) {
+                    const p = items[i];
+                    const dx = mouseX - p.x, dy = mouseY - p.y;
                     const dist = Math.sqrt(dx * dx + dy * dy);
-                    if (dist < CURSOR_ATTRACT_DIST) {
-                        const alpha = LINE_MAX_ALPHA * 1.8 * (1 - dist / CURSOR_ATTRACT_DIST);
+                    if (dist < 220 && dist > 1) {
+                        const f = (1 - dist / 220) * 0.015;
+                        p.vx += (dx / dist) * f; p.vy += (dy / dist) * f;
+                    }
+                    const sp = Math.sqrt(p.vx * p.vx + p.vy * p.vy);
+                    if (sp > 1.4) { p.vx = p.vx / sp * 1.4; p.vy = p.vy / sp * 1.4; }
+                    p.x += p.vx; p.y += p.vy;
+                    if (p.x < 0 || p.x > W) p.vx *= -1;
+                    if (p.y < 0 || p.y > H) p.vy *= -1;
+                    p.x = Math.max(0, Math.min(W, p.x));
+                    p.y = Math.max(0, Math.min(H, p.y));
+                }
+                for (let i = 0; i < items.length; i++) {
+                    for (let j = i + 1; j < items.length; j++) {
+                        const a = items[i], b = items[j];
+                        const dx = a.x - b.x, dy = a.y - b.y;
+                        const d = Math.sqrt(dx * dx + dy * dy);
+                        if (d > maxDist) continue;
+                        const t = 1 - d / maxDist;
                         ctx.beginPath();
-                        ctx.moveTo(p.x, p.y);
-                        ctx.lineTo(mouseX, mouseY);
-                        ctx.strokeStyle = `rgba(${rgb},${alpha.toFixed(3)})`;
-                        ctx.lineWidth = 0.6;
+                        ctx.moveTo(a.x, a.y); ctx.lineTo(b.x, b.y);
+                        ctx.strokeStyle = 'rgba(' + rgb + ',' + (0.22 * t * t).toFixed(3) + ')';
+                        ctx.lineWidth = 0.7 + t * 0.6;
                         ctx.stroke();
                     }
                 }
-
-                // Draw dots
-                ctx.fillStyle = getDotColor();
-                for (let i = 0; i < particles.length; i++) {
-                    ctx.beginPath();
-                    ctx.arc(particles[i].x, particles[i].y, DOT_RADIUS, 0, Math.PI * 2);
+                if (mouseX > -1000) {
+                    for (let i = 0; i < items.length; i++) {
+                        const p = items[i];
+                        const dx = mouseX - p.x, dy = mouseY - p.y;
+                        const d = Math.sqrt(dx * dx + dy * dy);
+                        if (d < 200) {
+                            const t = 1 - d / 200;
+                            ctx.beginPath();
+                            ctx.moveTo(p.x, p.y); ctx.lineTo(mouseX, mouseY);
+                            ctx.strokeStyle = 'rgba(' + rgb + ',' + (0.4 * t).toFixed(3) + ')';
+                            ctx.lineWidth = 0.5 + t * 0.8;
+                            ctx.stroke();
+                        }
+                    }
+                }
+                for (let i = 0; i < items.length; i++) {
+                    const p = items[i];
+                    if (p.bright) {
+                        const g = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, p.r * 5);
+                        g.addColorStop(0, 'rgba(' + rgb + ',0.28)');
+                        g.addColorStop(1, 'rgba(' + rgb + ',0)');
+                        ctx.fillStyle = g;
+                        ctx.beginPath(); ctx.arc(p.x, p.y, p.r * 5, 0, Math.PI * 2); ctx.fill();
+                    }
+                    ctx.beginPath(); ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+                    ctx.fillStyle = 'rgba(' + rgb + ',' + (p.bright ? Math.min(0.9, p.a + 0.35) : p.a).toFixed(3) + ')';
                     ctx.fill();
                 }
-
                 raf = requestAnimationFrame(draw);
             }
 
             window.addEventListener('resize', () => { resize(); init(); });
-            resize();
-            init();
-            draw();
+            resize(); init(); draw();
         })();
     </script>
     <script>
