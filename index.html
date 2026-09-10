@@ -14,15 +14,50 @@
             padding: 0;
         }
 
-        body {
-            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
-            background: #000;
-            min-height: 100vh;
-            color: #fff;
-            overflow-x: hidden;
+        :root {
+            --bg: #000;
+            --bg2: #0a0a0a;
+            --bg3: #0f0f0f;
+            --border: #1e1e1e;
+            --border2: #2a2a2a;
+            --text: #fff;
+            --text2: #d4d4d4;
+            --text3: #888;
+            --text4: #555;
+            --text5: #444;
+            --btn-hover: #161616;
+            --sidebar-hover: #141414;
+            --particle-color: rgba(255,255,255,0.55);
+            --particle-line: rgba(255,255,255,VAR_ALPHA);
+            --particle-line-rgb: 255,255,255;
         }
 
-        /* No decorative circles, no gradients, no glow — removed */
+        body.light {
+            --bg: #f0f0f0;
+            --bg2: #e8e8e8;
+            --bg3: #f5f5f5;
+            --border: #d0d0d0;
+            --border2: #c0c0c0;
+            --text: #111;
+            --text2: #333;
+            --text3: #555;
+            --text4: #888;
+            --text5: #aaa;
+            --btn-hover: #e0e0e0;
+            --sidebar-hover: #ddd;
+            --particle-color: rgba(0,0,0,0.35);
+            --particle-line-rgb: 0,0,0;
+        }
+
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background: var(--bg);
+            min-height: 100vh;
+            color: var(--text);
+            overflow-x: hidden;
+            transition: background 0.3s ease, color 0.3s ease;
+        }
+
         .circles { display: none; }
 
         #particleCanvas {
@@ -34,7 +69,7 @@
             height: 100%;
         }
 
-        /* ── Menu toggle ────────────────────────────────────────── */
+        /* ── Menu toggle (left) ─────────────────────────────────── */
         .menu-toggle {
             position: fixed;
             top: 18px;
@@ -43,8 +78,8 @@
             width: 42px;
             height: 42px;
             border-radius: 8px;
-            background: #111;
-            border: 1px solid #2a2a2a;
+            background: var(--bg2);
+            border: 1px solid var(--border2);
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -55,7 +90,7 @@
         }
 
         .menu-toggle:hover {
-            background: #1a1a1a;
+            background: var(--sidebar-hover);
             border-color: #444;
         }
 
@@ -63,7 +98,7 @@
             display: block;
             width: 18px;
             height: 2px;
-            background: #fff;
+            background: var(--text);
             border-radius: 1px;
             transition: all 0.25s ease;
         }
@@ -72,15 +107,39 @@
         .menu-toggle.active span:nth-child(2) { opacity: 0; }
         .menu-toggle.active span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
 
-        /* ── Sidebar ────────────────────────────────────────────── */
+        /* ── Settings toggle (right) ────────────────────────────── */
+        .settings-toggle {
+            position: fixed;
+            top: 18px;
+            right: 18px;
+            z-index: 300;
+            width: 42px;
+            height: 42px;
+            border-radius: 8px;
+            background: var(--bg2);
+            border: 1px solid var(--border2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: border-color 0.2s ease, background 0.2s ease;
+            font-size: 18px;
+        }
+
+        .settings-toggle:hover {
+            background: var(--sidebar-hover);
+            border-color: #444;
+        }
+
+        /* ── Left Sidebar ───────────────────────────────────────── */
         .categories-panel {
             position: fixed;
             top: 0;
             left: 0;
             width: 260px;
             height: 100vh;
-            background: #0a0a0a;
-            border-right: 1px solid #1e1e1e;
+            background: var(--bg2);
+            border-right: 1px solid var(--border);
             z-index: 250;
             transform: translateX(-100%);
             transition: transform 0.32s cubic-bezier(0.4, 0, 0.2, 1);
@@ -89,7 +148,7 @@
             display: flex;
             flex-direction: column;
             scrollbar-width: thin;
-            scrollbar-color: #2a2a2a #0a0a0a;
+            scrollbar-color: var(--border2) var(--bg2);
         }
 
         .categories-panel.open { transform: translateX(0); }
@@ -99,7 +158,7 @@
             justify-content: center;
             margin-bottom: 24px;
             padding-bottom: 18px;
-            border-bottom: 1px solid #1e1e1e;
+            border-bottom: 1px solid var(--border);
         }
 
         .sidebar-logo img {
@@ -112,7 +171,7 @@
             font-size: 10px;
             text-transform: uppercase;
             letter-spacing: 2px;
-            color: #555;
+            color: var(--text4);
             margin-bottom: 12px;
             padding-left: 6px;
             font-weight: 700;
@@ -126,7 +185,7 @@
             background: transparent;
             border: 1px solid transparent;
             border-radius: 7px;
-            color: #888;
+            color: var(--text3);
             font-size: 14px;
             font-weight: 500;
             text-align: left;
@@ -135,16 +194,156 @@
         }
 
         .category-btn:hover {
-            background: #141414;
-            border-color: #2a2a2a;
-            color: #e0e0e0;
+            background: var(--sidebar-hover);
+            border-color: var(--border2);
+            color: var(--text2);
         }
 
         .category-btn.active {
-            background: #fff;
-            border-color: #fff;
-            color: #000;
+            background: var(--text);
+            border-color: var(--text);
+            color: var(--bg);
             font-weight: 700;
+        }
+
+        /* ── Right Settings Panel ───────────────────────────────── */
+        .settings-panel {
+            position: fixed;
+            top: 0;
+            right: 0;
+            width: 280px;
+            height: 100vh;
+            background: var(--bg2);
+            border-left: 1px solid var(--border);
+            z-index: 250;
+            transform: translateX(100%);
+            transition: transform 0.32s cubic-bezier(0.4, 0, 0.2, 1);
+            padding: 28px 16px 28px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 0;
+            scrollbar-width: thin;
+            scrollbar-color: var(--border2) var(--bg2);
+        }
+
+        .settings-panel.open { transform: translateX(0); }
+
+        .settings-header {
+            font-size: 10px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: var(--text4);
+            margin-bottom: 20px;
+            padding-bottom: 18px;
+            border-bottom: 1px solid var(--border);
+            font-weight: 700;
+            padding-left: 4px;
+        }
+
+        .settings-section {
+            margin-bottom: 28px;
+        }
+
+        .settings-label {
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            color: var(--text4);
+            font-weight: 700;
+            margin-bottom: 10px;
+            padding-left: 2px;
+        }
+
+        /* Theme toggle buttons */
+        .theme-toggle-row {
+            display: flex;
+            gap: 8px;
+        }
+
+        .theme-btn {
+            flex: 1;
+            padding: 10px 12px;
+            border-radius: 8px;
+            border: 1px solid var(--border2);
+            background: var(--bg3);
+            color: var(--text3);
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            transition: all 0.2s ease;
+            font-family: inherit;
+        }
+
+        .theme-btn:hover {
+            border-color: var(--text3);
+            color: var(--text);
+        }
+
+        .theme-btn.active {
+            background: var(--text);
+            color: var(--bg);
+            border-color: var(--text);
+        }
+
+        /* Particle toggle */
+        .particle-toggle-row {
+            display: flex;
+            gap: 8px;
+        }
+
+        .particle-toggle-btn {
+            flex: 1;
+            padding: 10px 12px;
+            border-radius: 8px;
+            border: 1px solid var(--border2);
+            background: var(--bg3);
+            color: var(--text3);
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            text-align: center;
+            transition: all 0.2s ease;
+            font-family: inherit;
+        }
+
+        .particle-toggle-btn.active {
+            background: var(--text);
+            color: var(--bg);
+            border-color: var(--text);
+        }
+
+        .particle-toggle-btn:hover:not(.active) {
+            border-color: var(--text3);
+            color: var(--text);
+        }
+
+        /* Settings clock */
+        .settings-clock {
+            background: var(--bg3);
+            border: 1px solid var(--border2);
+            border-radius: 10px;
+            padding: 16px;
+            text-align: center;
+        }
+
+        .settings-clock-time {
+            font-size: 2rem;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+            color: var(--text);
+            font-variant-numeric: tabular-nums;
+        }
+
+        .settings-clock-date {
+            font-size: 11px;
+            color: var(--text4);
+            margin-top: 4px;
+            letter-spacing: 0.05em;
         }
 
         /* ── Overlay ─────────────────────────────────────────────── */
@@ -183,7 +382,7 @@
             font-size: 2rem;
             font-weight: 800;
             letter-spacing: -0.5px;
-            color: #fff;
+            color: var(--text);
             margin-bottom: 6px;
         }
 
@@ -193,7 +392,7 @@
         }
 
         .credits {
-            color: #555;
+            color: var(--text4);
             font-size: 13px;
         }
 
@@ -219,24 +418,24 @@
             padding: 13px 18px;
             font-size: 15px;
             border-radius: 8px;
-            border: 1px solid #2a2a2a;
-            background: #0f0f0f;
-            color: #fff;
+            border: 1px solid var(--border2);
+            background: var(--bg3);
+            color: var(--text);
             outline: none;
-            transition: border-color 0.2s ease;
+            transition: border-color 0.2s ease, background 0.3s ease, color 0.3s ease;
             font-family: inherit;
         }
 
-        #searchInput::placeholder { color: #444; }
+        #searchInput::placeholder { color: var(--text5); }
 
         #searchInput:focus {
-            border-color: #555;
+            border-color: var(--text3);
         }
 
         #suggestGamesBtn {
-            background: #fff;
-            border: 1px solid #fff;
-            color: #000;
+            background: var(--text);
+            border: 1px solid var(--text);
+            color: var(--bg);
             padding: 10px 20px;
             border-radius: 7px;
             font-size: 13.5px;
@@ -249,14 +448,13 @@
         }
 
         #suggestGamesBtn:hover {
-            background: #e0e0e0;
-            border-color: #e0e0e0;
+            opacity: 0.85;
         }
 
         #lolbutton {
-            background: #111;
-            border: 1px solid #2a2a2a;
-            color: #888;
+            background: var(--bg2);
+            border: 1px solid var(--border2);
+            color: var(--text3);
             padding: 8px 16px;
             border-radius: 7px;
             font-size: 13px;
@@ -267,7 +465,7 @@
 
         #lolbutton:hover {
             border-color: #444;
-            color: #ccc;
+            color: var(--text2);
         }
 
         /* ── Game sections ───────────────────────────────────────── */
@@ -289,10 +487,10 @@
             font-weight: 800;
             text-transform: uppercase;
             letter-spacing: 2.5px;
-            color: #444;
+            color: var(--text5);
             margin-bottom: 14px;
             padding-bottom: 10px;
-            border-bottom: 1px solid #1a1a1a;
+            border-bottom: 1px solid var(--border);
         }
 
         .buttons-container {
@@ -303,8 +501,8 @@
         }
 
         input[type="button"] {
-            background: #0f0f0f;
-            border: 1px solid #1e1e1e;
+            background: var(--bg3);
+            border: 1px solid var(--border);
             padding: 13px 20px;
             font-size: 14.5px;
             font-weight: 500;
@@ -312,25 +510,37 @@
             cursor: pointer;
             width: 100%;
             max-width: 620px;
-            color: #d4d4d4;
+            color: var(--text2);
             text-align: left;
             transition: border-color 0.15s ease, color 0.15s ease, background 0.15s ease;
             font-family: inherit;
         }
 
         input[type="button"]:hover {
-            background: #161616;
+            background: var(--btn-hover);
             border-color: #333;
-            color: #fff;
+            color: var(--text);
         }
 
         input[type="button"]:active {
-            background: #1e1e1e;
+            background: var(--border);
         }
 
-        /* ── Empty / footer ─────────────────────────────────────── */
+        .footer-cursor {
+            display: inline-block;
+            width: 0.5ch;
+            height: 0.9em;
+            background: #666;
+            vertical-align: -1px;
+            margin-left: 2px;
+            animation: blink 0.9s step-end infinite;
+        }
+
+        .footer-sep {
+            color: #333;
+        }
         .empty-message {
-            color: #444;
+            color: var(--text4);
             font-style: italic;
             text-align: center;
             padding: 30px;
@@ -338,25 +548,25 @@
 
         .site-footer {
             text-align: center;
-            color: #444;
+            color: var(--text5);
             font-size: 12px;
             padding: 32px 0 16px;
             margin-top: 40px;
-            border-top: 1px solid #141414;
+            border-top: 1px solid var(--border);
         }
 
         .footer-link-blue {
-            color: #888;
+            color: var(--text3);
             text-decoration: none;
             transition: color 0.15s;
         }
-        .footer-link-blue:hover { color: #ccc; }
+        .footer-link-blue:hover { color: var(--text2); }
 
         /* ── Other sites ─────────────────────────────────────────── */
         .other-sites-section {
             margin-top: auto;
             padding-top: 16px;
-            border-top: 1px solid #1e1e1e;
+            border-top: 1px solid var(--border);
         }
 
         .other-sites-list {
@@ -373,7 +583,7 @@
             padding: 9px 10px;
             border-radius: 7px;
             border: 1px solid transparent;
-            color: #777;
+            color: var(--text3);
             text-decoration: none;
             font-size: 13.5px;
             font-weight: 500;
@@ -381,9 +591,9 @@
         }
 
         .other-site-link:hover {
-            background: #141414;
-            border-color: #2a2a2a;
-            color: #e0e0e0;
+            background: var(--sidebar-hover);
+            border-color: var(--border2);
+            color: var(--text2);
         }
 
         .other-site-link img {
@@ -391,7 +601,7 @@
             height: 26px;
             border-radius: 6px;
             object-fit: contain;
-            background: #1a1a1a;
+            background: var(--border);
             flex-shrink: 0;
         }
 
@@ -404,9 +614,86 @@
             justify-content: center;
             font-size: 12px;
             font-weight: 700;
-            color: #000;
-            background: #fff;
+            color: var(--bg);
+            background: var(--text);
             flex-shrink: 0;
+        }
+
+        .settings-cloak-desc {
+            font-size: 11px;
+            color: var(--text4);
+            line-height: 1.5;
+            margin-bottom: 10px;
+        }
+
+        .cloak-field {
+            margin-bottom: 12px;
+        }
+
+        .cloak-field label {
+            display: block;
+            font-size: 11px;
+            color: var(--text4);
+            margin-bottom: 5px;
+            letter-spacing: 0.04em;
+        }
+
+        .cloak-input,
+        .cloak-select {
+            width: 100%;
+            padding: 10px 12px;
+            border-radius: 8px;
+            border: 1px solid var(--border2);
+            background: var(--bg3);
+            color: var(--text);
+            font-size: 13px;
+            font-family: inherit;
+            outline: none;
+            transition: border-color 0.2s ease, background 0.2s ease;
+            appearance: none;
+            -webkit-appearance: none;
+        }
+
+        .cloak-input:focus,
+        .cloak-select:focus {
+            border-color: var(--text3);
+        }
+
+        .cloak-select {
+            cursor: pointer;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='%23888' d='M1 1l5 5 5-5'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 12px center;
+            padding-right: 32px;
+        }
+
+        body.light .cloak-select {
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='%23555' d='M1 1l5 5 5-5'/%3E%3C/svg%3E");
+        }
+
+        .cloak-presets {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-top: 8px;
+        }
+
+        .cloak-preset-btn {
+            padding: 6px 10px;
+            border-radius: 6px;
+            border: 1px solid var(--border2);
+            background: var(--bg3);
+            color: var(--text3);
+            font-size: 11px;
+            font-weight: 600;
+            cursor: pointer;
+            font-family: inherit;
+            transition: all 0.15s ease;
+        }
+
+        .cloak-preset-btn:hover {
+            border-color: var(--text3);
+            color: var(--text);
         }
 
         /* ── Boot loader ─────────────────────────────────────────── */
@@ -519,6 +806,7 @@
             .header h1 { font-size: 1.5rem; }
             .header h1 img { height: 32px; }
             .categories-panel { width: 240px; }
+            .settings-panel { width: 260px; }
         }
     </style>
 </head>
@@ -547,17 +835,19 @@
 
     <canvas id="particleCanvas"></canvas>
 
-  
+    <!-- Left sidebar toggle -->
     <button class="menu-toggle" id="menuToggle" aria-label="Toggle categories">
         <span></span>
         <span></span>
         <span></span>
     </button>
 
+    <!-- Right settings toggle -->
+    <button class="settings-toggle" id="settingsToggle" aria-label="Toggle settings"><img src="settings.png" alt="Settings" style="width:22px;height:22px;object-fit:contain;"></button>
 
     <div class="overlay" id="overlay"></div>
 
- 
+    <!-- Left sidebar -->
     <div class="categories-panel" id="categoriesPanel">
         <div class="sidebar-logo">
             <img src="logo.png" alt="Logo">
@@ -565,20 +855,87 @@
 
         <h3>Categories</h3>
         <button class="category-btn active" data-category="all">All Games</button>
-        <button class="category-btn" data-category="action">Action & Shooters</button>
-        <button class="category-btn" data-category="puzzle">Puzzle & Brain</button>
+        <button class="category-btn" data-category="action">Action &amp; Shooters</button>
+        <button class="category-btn" data-category="puzzle">Puzzle &amp; Brain</button>
         <button class="category-btn" data-category="multiplayer">Multiplayer</button>
-        <button class="category-btn" data-category="idle">Idle & Clicker</button>
-        <button class="category-btn" data-category="racing">Racing & Driving</button>
+        <button class="category-btn" data-category="idle">Idle &amp; Clicker</button>
+        <button class="category-btn" data-category="racing">Racing &amp; Driving</button>
         <button class="category-btn" data-category="platformer">Platformers</button>
         <button class="category-btn" data-category="horror">Horror</button>
         <button class="category-btn" data-category="sports">Sports</button>
-        <button class="category-btn" data-category="retro">Retro & Arcade</button>
+        <button class="category-btn" data-category="retro">Retro &amp; Arcade</button>
         <button class="category-btn" data-category="strategy">Strategy</button>
 
         <div class="other-sites-section">
             <h3>Other Sites</h3>
             <div class="other-sites-list" id="otherSitesList"></div>
+        </div>
+    </div>
+
+    <!-- Right settings panel -->
+    <div class="settings-panel" id="settingsPanel">
+        <div class="settings-header">Settings</div>
+
+        <div class="settings-section">
+            <div class="settings-label">Clock</div>
+            <div class="settings-clock">
+                <div class="settings-clock-time" id="settingsClock">--:--:--</div>
+                <div class="settings-clock-date" id="settingsDate">---</div>
+            </div>
+        </div>
+
+        <div class="settings-section">
+            <div class="settings-label">Theme</div>
+            <div class="theme-toggle-row">
+                <button class="theme-btn active" id="darkBtn" onclick="setTheme('dark')">Dark</button>
+                <button class="theme-btn" id="lightBtn" onclick="setTheme('light')">Light</button>
+            </div>
+        </div>
+
+        <div class="settings-section">
+            <div class="settings-label">Background</div>
+            <div class="particle-toggle-row">
+                <button class="particle-toggle-btn active" id="particleOnBtn" onclick="setParticles(true)">On</button>
+                <button class="particle-toggle-btn" id="particleOffBtn" onclick="setParticles(false)">Off</button>
+            </div>
+        </div>
+
+        <div class="settings-section">
+            <div class="settings-label">Tab Cloak</div>
+
+            <div class="particle-toggle-row" style="margin-bottom:14px;">
+                <button class="particle-toggle-btn" id="cloakOnBtn" onclick="setCloak(true)">On</button>
+                <button class="particle-toggle-btn active" id="cloakOffBtn" onclick="setCloak(false)">Off</button>
+            </div>
+
+            <div class="cloak-field">
+                <label for="cloakTitle">Tab Title</label>
+                <input class="cloak-input" type="text" id="cloakTitle" placeholder="Example: Google Classroom" autocomplete="off">
+            </div>
+
+            <div class="cloak-field">
+                <label for="cloakFavicon">Image URL</label>
+                <input class="cloak-input" type="text" id="cloakFavicon" placeholder="Example: https://something.com/hi.png" autocomplete="off">
+            </div>
+
+            <div class="cloak-field">
+                <label for="cloakPreset">Presets</label>
+                <select class="cloak-select" id="cloakPreset">
+                    <option value="">Custom</option>
+                    <option value="classroom">Google Classroom</option>
+                    <option value="drive">Google Drive</option>
+                    <option value="docs">Google Docs</option>
+                    <option value="gmail">Gmail</option>
+                    <option value="canvas">Canvas</option>
+                    <option value="schoology">Schoology</option>
+                    <option value="blank">Blank Tab</option>
+                </select>
+            </div>
+
+            <div class="cloak-presets">
+                <button type="button" class="cloak-preset-btn" id="cloakApplyBtn">Apply Now</button>
+                <button type="button" class="cloak-preset-btn" id="cloakResetBtn">Reset</button>
+            </div>
         </div>
     </div>
 
@@ -588,13 +945,13 @@
                 <img src="logo.png" alt="Logo">
                 <span>Wes's Stash Thingy</span>
             </h1>
-            <p class="credits">Credits to Wes & Mason for finding the games</p>
+            <p class="credits"><span id="footerTyped" class="footer-typed"></span><span class="footer-cursor"></span></p>
         </div>
 
         <div class="search-area">
             <div class="top-actions">
                 <a id="suggestGamesBtn" href="https://docs.google.com/forms/d/e/1FAIpQLSf-uFCzfquDcTrgAQ2Oo6rZA6vUGX338duyJzk6AKo7G0VVfQ/viewform?usp=publish-editor" target="_blank" rel="noopener noreferrer">Suggest Games</a>
-</div>
+            </div>
             <input type="text" placeholder="Search games..." id="searchInput">
             <script src="https://cdn.jsdelivr.net/gh/bubbls/ugs-singlefile@main/searchbut.js"></script>
             <button id="lolbutton" onclick="const script = document.createElement('script');script.src = 'https://cdn.jsdelivr.net/gh/bubbls/ugs-singlefile@latest/game.js';document.body.appendChild(script);">
@@ -605,7 +962,7 @@
         <div id="sections-container"></div>
 
         <footer class="site-footer">
-            Made by Wes • © 2026 Crown Games. All rights reserved. |
+            © 2026 Crown Games. All rights reserved. •
             <a href="privacy.html" class="footer-link-blue">Privacy Policy</a>
         </footer>
     </div>
@@ -626,18 +983,80 @@
             strategy: ['strategy', 'tower', 'defense', 'empire', 'war', 'tactics', 'chess', 'age of']
         };
 
+        // ── Theme system ──────────────────────────────────────────────────────────
+        function setTheme(mode) {
+            if (mode === 'light') {
+                document.body.classList.add('light');
+                document.getElementById('darkBtn').classList.remove('active');
+                document.getElementById('lightBtn').classList.add('active');
+            } else {
+                document.body.classList.remove('light');
+                document.getElementById('darkBtn').classList.add('active');
+                document.getElementById('lightBtn').classList.remove('active');
+            }
+            localStorage.setItem('wes_theme', mode);
+        }
+
+        // Load saved theme
+        const savedTheme = localStorage.getItem('wes_theme') || 'dark';
+        setTheme(savedTheme);
+
+        // ── Clock ─────────────────────────────────────────────────────────────────
+        function updateClocks() {
+            const now = new Date();
+            const h = String(now.getHours()).padStart(2, '0');
+            const m = String(now.getMinutes()).padStart(2, '0');
+            const s = String(now.getSeconds()).padStart(2, '0');
+            const timeStr = `${h}:${m}:${s}`;
+
+            const settingsClock = document.getElementById('settingsClock');
+            const settingsDate = document.getElementById('settingsDate');
+            if (settingsClock) settingsClock.textContent = timeStr;
+            if (settingsDate) {
+                const days = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+                const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+                settingsDate.textContent = `${days[now.getDay()]}, ${months[now.getMonth()]} ${now.getDate()} ${now.getFullYear()}`;
+            }
+        }
+        updateClocks();
+        setInterval(updateClocks, 1000);
+
+        // ── Sidebar / Settings toggle ─────────────────────────────────────────────
         const menuToggle = document.getElementById('menuToggle');
+        const settingsToggle = document.getElementById('settingsToggle');
         const categoriesPanel = document.getElementById('categoriesPanel');
+        const settingsPanel = document.getElementById('settingsPanel');
         const overlay = document.getElementById('overlay');
 
+        function closeAll() {
+            menuToggle.classList.remove('active');
+            categoriesPanel.classList.remove('open');
+            settingsPanel.classList.remove('open');
+            overlay.classList.remove('show');
+        }
+
         function toggleMenu() {
-            menuToggle.classList.toggle('active');
-            categoriesPanel.classList.toggle('open');
-            overlay.classList.toggle('show');
+            const isOpen = categoriesPanel.classList.contains('open');
+            closeAll();
+            if (!isOpen) {
+                menuToggle.classList.add('active');
+                categoriesPanel.classList.add('open');
+                overlay.classList.add('show');
+            }
+        }
+
+        function toggleSettings() {
+            const isOpen = settingsPanel.classList.contains('open');
+            closeAll();
+            if (!isOpen) {
+                settingsPanel.classList.add('open');
+                overlay.classList.add('show');
+            }
         }
 
         menuToggle.addEventListener('click', toggleMenu);
-        overlay.addEventListener('click', toggleMenu);
+        settingsToggle.addEventListener('click', toggleSettings);
+        overlay.addEventListener('click', closeAll);
 
         let currentCategory = 'all';
 
@@ -647,7 +1066,7 @@
                 btn.classList.add('active');
                 currentCategory = btn.dataset.category;
                 filterGames();
-                if (window.innerWidth < 900) toggleMenu();
+                if (window.innerWidth < 900) closeAll();
             });
         });
 
@@ -777,6 +1196,7 @@
                 'Hiding from the firewall…',
                 'Almost there…',
             ];
+
             let lineIndex = 0;
             if (statusEl) {
                 statusEl.textContent = lines[0];
@@ -787,7 +1207,6 @@
                 }, 700);
             }
 
-    
             const credit = 'made by wes';
             let ti = 0;
             function typeNext() {
@@ -825,22 +1244,199 @@
             setTimeout(hideLoader, MAX_MS);
         })();
 
+        // ── Particle toggle ───────────────────────────────────────────────────────
+        let particlesEnabled = true;
+        function setParticles(enabled) {
+            particlesEnabled = enabled;
+            const canvas = document.getElementById('particleCanvas');
+            if (canvas) canvas.style.opacity = enabled ? '1' : '0';
+            document.getElementById('particleOnBtn').classList.toggle('active', enabled);
+            document.getElementById('particleOffBtn').classList.toggle('active', !enabled);
+        }
 
+        // ── Tab cloak ─────────────────────────────────────────────────────────────
+        let cloakEnabled = localStorage.getItem('wes_cloak') === 'true';
 
-    </script>    <script>
-        // ── Particle network background ───────────────────────────────────────────
+        const CLOAK_PRESETS = {
+            classroom: { title: 'Google Classroom', favicon: 'https://ssl.gstatic.com/classroom/favicon.png' },
+            drive:     { title: 'Google Drive',     favicon: 'https://ssl.gstatic.com/docs/doclist/images/drive_2022q3_32dp.png' },
+            docs:      { title: 'Google Docs',      favicon: 'https://ssl.gstatic.com/docs/documents/images/kix-favicon7.ico' },
+            gmail:     { title: 'Gmail',            favicon: 'https://ssl.gstatic.com/ui/v1/icons/mail/rfr/gmail.ico' },
+            canvas:    { title: 'Canvas',           favicon: 'https://du11hjcvx0uqb.cloudfront.net/dist/images/favicon-e10d657a73.ico' },
+            schoology: { title: 'Schoology',        favicon: 'https://www.schoology.com/sites/default/files/favicon_0.ico' },
+            blank:     { title: '',                 favicon: '' }
+        };
+
+        function getCloakConfig() {
+            return {
+                title: (document.getElementById('cloakTitle')?.value || localStorage.getItem('wes_cloak_title') || '').trim(),
+                favicon: (document.getElementById('cloakFavicon')?.value || localStorage.getItem('wes_cloak_favicon') || '').trim()
+            };
+        }
+
+        function saveCloakConfig() {
+            const title = document.getElementById('cloakTitle')?.value?.trim() || '';
+            const favicon = document.getElementById('cloakFavicon')?.value?.trim() || '';
+            localStorage.setItem('wes_cloak_title', title);
+            localStorage.setItem('wes_cloak_favicon', favicon);
+        }
+
+        function applyCloakToCurrentPage() {
+            if (!cloakEnabled) return;
+            const cfg = getCloakConfig();
+            if (cfg.title !== undefined) document.title = cfg.title || "Wes's Stash Thingy";
+
+            let link = document.querySelector("link[rel*='icon']");
+            if (!link) {
+                link = document.createElement('link');
+                link.rel = 'icon';
+                document.head.appendChild(link);
+            }
+            if (cfg.favicon) {
+                link.href = cfg.favicon;
+            } else if (cfg.title === '') {
+                link.href = 'data:,';
+            }
+        }
+
+        function setCloak(enabled) {
+            cloakEnabled = enabled;
+            localStorage.setItem('wes_cloak', enabled);
+            document.getElementById('cloakOnBtn').classList.toggle('active', enabled);
+            document.getElementById('cloakOffBtn').classList.toggle('active', !enabled);
+
+            if (enabled) {
+                applyCloakToCurrentPage();
+            } else {
+                document.title = "Wes's Stash Thingy";
+                const link = document.querySelector("link[rel*='icon']");
+                if (link) link.href = 'favicon.ico';
+            }
+        }
+
+        // Restore saved cloak UI + state
+        (function restoreCloakUI() {
+            const titleInput = document.getElementById('cloakTitle');
+            const favInput = document.getElementById('cloakFavicon');
+            if (titleInput) titleInput.value = localStorage.getItem('wes_cloak_title') || '';
+            if (favInput) favInput.value = localStorage.getItem('wes_cloak_favicon') || '';
+
+            setCloak(cloakEnabled);
+
+            titleInput?.addEventListener('input', () => {
+                saveCloakConfig();
+                if (cloakEnabled) applyCloakToCurrentPage();
+            });
+            favInput?.addEventListener('input', () => {
+                saveCloakConfig();
+                if (cloakEnabled) applyCloakToCurrentPage();
+            });
+
+            document.getElementById('cloakPreset')?.addEventListener('change', (e) => {
+                const key = e.target.value;
+                if (!key || !CLOAK_PRESETS[key]) return;
+                const p = CLOAK_PRESETS[key];
+                if (titleInput) titleInput.value = p.title;
+                if (favInput) favInput.value = p.favicon;
+                saveCloakConfig();
+                if (cloakEnabled) applyCloakToCurrentPage();
+            });
+
+            document.getElementById('cloakApplyBtn')?.addEventListener('click', () => {
+                saveCloakConfig();
+                setCloak(true);
+            });
+
+            document.getElementById('cloakResetBtn')?.addEventListener('click', () => {
+                if (titleInput) titleInput.value = '';
+                if (favInput) favInput.value = '';
+                const preset = document.getElementById('cloakPreset');
+                if (preset) preset.value = '';
+                localStorage.removeItem('wes_cloak_title');
+                localStorage.removeItem('wes_cloak_favicon');
+                setCloak(false);
+            });
+        })();
+
+        // Opens a URL through an about:blank tab with custom title + favicon
+        function openCloaked(url) {
+            const cfg = getCloakConfig();
+            const tab = window.open('about:blank', '_blank');
+            if (!tab) {
+                window.open(url, '_blank');
+                return;
+            }
+
+            const safeTitle = (cfg.title || '').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+            const fav = cfg.favicon
+                ? '<link rel="icon" href="' + cfg.favicon.replace(/"/g, '') + '">'
+                : '';
+
+            tab.document.write(
+                '<!DOCTYPE html><html><head><title>' + safeTitle + '</title>' + fav +
+                '<style>*{margin:0;padding:0}html,body,iframe{width:100%;height:100%;border:none;overflow:hidden;background:#000}</style>' +
+                '</head><body>' +
+                '<iframe src="' + String(url).replace(/"/g, '&quot;') + '" allowfullscreen></iframe>' +
+                '</body></html>'
+            );
+            tab.document.close();
+        }
+
+        // Intercept game button clicks
+        document.addEventListener('click', function(e) {
+            if (!cloakEnabled) return;
+            const btn = e.target.closest('input[type="button"]');
+            if (!btn) return;
+
+            const originalOnclick = btn.onclick;
+            if (!originalOnclick) return;
+
+            e.preventDefault();
+            e.stopImmediatePropagation();
+
+            let capturedUrl = null;
+            const origOpen = window.open;
+            window.open = function(url) {
+                capturedUrl = url;
+                return { document: { write: function(){}, close: function(){} } };
+            };
+
+            try { originalOnclick.call(btn, e); } catch(_) {}
+
+            window.open = origOpen;
+
+            if (capturedUrl) {
+                openCloaked(capturedUrl);
+            }
+        }, true);
+
+    </script>
+    <script>
+        // ── Particle network background — cursor-reactive ─────────────────────────
         (function () {
             const canvas = document.getElementById('particleCanvas');
             const ctx = canvas.getContext('2d');
 
             const PARTICLE_COUNT = 88;
-            const MAX_DIST       = 148;   // max px to draw a line
-            const SPEED          = 0.38;  // base movement speed
+            const MAX_DIST       = 148;
+            const SPEED          = 0.38;
             const DOT_RADIUS     = 1.8;
-            const DOT_COLOR      = 'rgba(255,255,255,0.55)';
             const LINE_MAX_ALPHA = 0.18;
+            const CURSOR_ATTRACT_DIST = 180; // px — particles get pulled toward cursor within this radius
+            const CURSOR_ATTRACT_STR  = 0.012; // pull strength
 
             let W, H, particles = [], raf;
+            let mouseX = -9999, mouseY = -9999;
+
+            // Track cursor
+            window.addEventListener('mousemove', e => {
+                mouseX = e.clientX;
+                mouseY = e.clientY;
+            });
+            window.addEventListener('mouseleave', () => {
+                mouseX = -9999;
+                mouseY = -9999;
+            });
 
             function resize() {
                 W = canvas.width  = window.innerWidth;
@@ -852,20 +1448,48 @@
                 this.y  = Math.random() * H;
                 this.vx = (Math.random() - 0.5) * SPEED * 2;
                 this.vy = (Math.random() - 0.5) * SPEED * 2;
-                // keep minimum speed so nothing stalls
                 if (Math.abs(this.vx) < 0.08) this.vx = this.vx < 0 ? -0.08 : 0.08;
                 if (Math.abs(this.vy) < 0.08) this.vy = this.vy < 0 ? -0.08 : 0.08;
             }
 
             Particle.prototype.update = function () {
+                // Cursor attraction
+                const dx = mouseX - this.x;
+                const dy = mouseY - this.y;
+                const dist = Math.sqrt(dx * dx + dy * dy);
+                if (dist < CURSOR_ATTRACT_DIST && dist > 1) {
+                    const force = (1 - dist / CURSOR_ATTRACT_DIST) * CURSOR_ATTRACT_STR;
+                    this.vx += (dx / dist) * force;
+                    this.vy += (dy / dist) * force;
+                }
+
+                // Speed cap so cursor attraction doesn't snowball
+                const speed = Math.sqrt(this.vx * this.vx + this.vy * this.vy);
+                const maxSpeed = SPEED * 4;
+                if (speed > maxSpeed) {
+                    this.vx = (this.vx / speed) * maxSpeed;
+                    this.vy = (this.vy / speed) * maxSpeed;
+                }
+
                 this.x += this.vx;
                 this.y += this.vy;
-                // bounce off edges
+
                 if (this.x < 0)  { this.x = 0;  this.vx *= -1; }
                 if (this.x > W)  { this.x = W;  this.vx *= -1; }
                 if (this.y < 0)  { this.y = 0;  this.vy *= -1; }
                 if (this.y > H)  { this.y = H;  this.vy *= -1; }
             };
+
+            function getLineColor() {
+                // Read from CSS variable so it respects dark/light mode
+                const isLight = document.body.classList.contains('light');
+                return isLight ? '0,0,0' : '255,255,255';
+            }
+
+            function getDotColor() {
+                const isLight = document.body.classList.contains('light');
+                return isLight ? 'rgba(0,0,0,0.35)' : 'rgba(255,255,255,0.55)';
+            }
 
             function init() {
                 particles = [];
@@ -873,12 +1497,18 @@
             }
 
             function draw() {
+                if (!particlesEnabled) {
+                    raf = requestAnimationFrame(draw);
+                    return;
+                }
+
                 ctx.clearRect(0, 0, W, H);
 
-                // update positions
                 for (let i = 0; i < particles.length; i++) particles[i].update();
 
-                // draw lines between close particles
+                const rgb = getLineColor();
+
+                // Draw lines between close particles
                 for (let i = 0; i < particles.length; i++) {
                     const a = particles[i];
                     for (let j = i + 1; j < particles.length; j++) {
@@ -891,14 +1521,31 @@
                         ctx.beginPath();
                         ctx.moveTo(a.x, a.y);
                         ctx.lineTo(b.x, b.y);
-                        ctx.strokeStyle = `rgba(255,255,255,${alpha.toFixed(3)})`;
+                        ctx.strokeStyle = `rgba(${rgb},${alpha.toFixed(3)})`;
                         ctx.lineWidth = 0.8;
                         ctx.stroke();
                     }
                 }
 
-                // draw dots on top
-                ctx.fillStyle = DOT_COLOR;
+                // Draw lines from particles near cursor to cursor position
+                for (let i = 0; i < particles.length; i++) {
+                    const p = particles[i];
+                    const dx = mouseX - p.x;
+                    const dy = mouseY - p.y;
+                    const dist = Math.sqrt(dx * dx + dy * dy);
+                    if (dist < CURSOR_ATTRACT_DIST) {
+                        const alpha = LINE_MAX_ALPHA * 1.8 * (1 - dist / CURSOR_ATTRACT_DIST);
+                        ctx.beginPath();
+                        ctx.moveTo(p.x, p.y);
+                        ctx.lineTo(mouseX, mouseY);
+                        ctx.strokeStyle = `rgba(${rgb},${alpha.toFixed(3)})`;
+                        ctx.lineWidth = 0.6;
+                        ctx.stroke();
+                    }
+                }
+
+                // Draw dots
+                ctx.fillStyle = getDotColor();
                 for (let i = 0; i < particles.length; i++) {
                     ctx.beginPath();
                     ctx.arc(particles[i].x, particles[i].y, DOT_RADIUS, 0, Math.PI * 2);
@@ -912,6 +1559,59 @@
             resize();
             init();
             draw();
+        })();
+    </script>
+    <script>
+        // ── Footer typing loop ────────────────────────────────────────────────────
+        (function () {
+            const el = document.getElementById('footerTyped');
+            if (!el) return;
+
+            const lines = [
+                'Made by Wes and Mason',
+                'best site in TMS',
+                'Wes made this btw',
+                '372 games and counting',
+                'no cap this slaps',
+            ];
+
+            const TYPE_SPEED   = 52;
+            const DELETE_SPEED = 28;
+            const PAUSE_AFTER  = 2200;
+            const PAUSE_BEFORE = 380;
+
+            let lineIndex = 0;
+            let charIndex = 0;
+            let deleting  = false;
+
+            function tick() {
+                const current = lines[lineIndex];
+
+                if (!deleting) {
+                    charIndex++;
+                    el.textContent = current.slice(0, charIndex);
+
+                    if (charIndex === current.length) {
+                        deleting = true;
+                        setTimeout(tick, PAUSE_AFTER);
+                        return;
+                    }
+                    setTimeout(tick, TYPE_SPEED);
+                } else {
+                    charIndex--;
+                    el.textContent = current.slice(0, charIndex);
+
+                    if (charIndex === 0) {
+                        deleting = false;
+                        lineIndex = (lineIndex + 1) % lines.length;
+                        setTimeout(tick, PAUSE_BEFORE);
+                        return;
+                    }
+                    setTimeout(tick, DELETE_SPEED);
+                }
+            }
+
+            setTimeout(tick, 800);
         })();
     </script>
 
