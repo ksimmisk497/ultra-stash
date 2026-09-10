@@ -84,7 +84,34 @@
             inset: 0;
             z-index: 0;
             pointer-events: none;
-            background: var(--site-overlay, rgba(0,0,0,0.55));
+            background: var(--site-overlay, transparent);
+        }
+
+        body.has-site-image .header h1 {
+            color: #000 !important;
+            text-shadow: 0 1px 2px rgba(255,255,255,0.55);
+        }
+
+        body.has-site-image .credits {
+            color: #111 !important;
+            text-shadow: 0 1px 2px rgba(255,255,255,0.45);
+        }
+
+        body.has-site-image input[type="button"] {
+            background: var(--theme-btn-bg, var(--bg3)) !important;
+            border-color: var(--border2) !important;
+            color: var(--text) !important;
+        }
+
+        body.has-site-image input[type="button"]:hover {
+            background: var(--theme-btn-hover, var(--btn-hover)) !important;
+            border-color: var(--text3) !important;
+            color: var(--text) !important;
+        }
+
+        body.has-site-image .categories-panel,
+        body.has-site-image .settings-panel {
+            background: var(--bg2) !important;
         }
 
         /* ── Menu toggle (left) ─────────────────────────────────── */
@@ -1300,58 +1327,103 @@
             }).join('');
         }
 
-        function extractColorsFromImage(url, cb) {
-            const img = new Image();
-            img.crossOrigin = 'anonymous';
-            img.onload = function () {
-                try {
-                    const c = document.createElement('canvas');
-                    c.width = 64; c.height = 64;
-                    const x = c.getContext('2d');
-                    x.drawImage(img, 0, 0, 64, 64);
-                    const data = x.getImageData(0, 0, 64, 64).data;
-                    let r = 0, g = 0, b = 0, n = 0, r2 = 0, g2 = 0, b2 = 0, n2 = 0;
-                    for (let i = 0; i < data.length; i += 4) {
-                        if (data[i + 3] < 128) continue;
-                        const pr = data[i], pg = data[i + 1], pb = data[i + 2];
-                        const lum = (pr + pg + pb) / 3;
-                        r += pr; g += pg; b += pb; n++;
-                        if (lum > 40 && lum < 220) { r2 += pr; g2 += pg; b2 += pb; n2++; }
-                    }
-                    if (!n) { cb(null); return; }
-                    const avg = { r: (r / n) | 0, g: (g / n) | 0, b: (b / n) | 0 };
-                    const mid = n2 ? { r: (r2 / n2) | 0, g: (g2 / n2) | 0, b: (b2 / n2) | 0 } : avg;
-                    const darken = function (col, f) {
-                        return { r: (col.r * f) | 0, g: (col.g * f) | 0, b: (col.b * f) | 0 };
-                    };
-                    const lighten = function (col, f) {
-                        return {
-                            r: Math.min(255, (col.r + (255 - col.r) * f) | 0),
-                            g: Math.min(255, (col.g + (255 - col.g) * f) | 0),
-                            b: Math.min(255, (col.b + (255 - col.b) * f) | 0)
-                        };
-                    };
-                    const bg = darken(avg, 0.25);
-                    const bg2 = darken(avg, 0.38);
-                    const bg3 = darken(mid, 0.48);
-                    const text = lighten(avg, 0.88);
-                    const text2 = lighten(mid, 0.7);
-                    cb({
-                        bg: rgbToHex(bg.r, bg.g, bg.b),
-                        bg2: rgbToHex(bg2.r, bg2.g, bg2.b),
-                        bg3: rgbToHex(bg3.r, bg3.g, bg3.b),
-                        border: rgbToHex(darken(mid, 0.55).r, darken(mid, 0.55).g, darken(mid, 0.55).b),
-                        border2: rgbToHex(darken(mid, 0.7).r, darken(mid, 0.7).g, darken(mid, 0.7).b),
-                        text: rgbToHex(text.r, text.g, text.b),
-                        text2: rgbToHex(text2.r, text2.g, text2.b),
-                        text3: rgbToHex(lighten(mid, 0.4).r, lighten(mid, 0.4).g, lighten(mid, 0.4).b),
-                        text4: rgbToHex(lighten(mid, 0.22).r, lighten(mid, 0.22).g, lighten(mid, 0.22).b),
-                        text5: rgbToHex(darken(mid, 0.72).r, darken(mid, 0.72).g, darken(mid, 0.72).b)
-                    });
-                } catch (_) { cb(null); }
+        function clampByte(v) {
+            return Math.max(0, Math.min(255, v | 0));
+        }
+
+        function mixRgb(a, b, t) {
+            return {
+                r: clampByte(a.r + (b.r - a.r) * t),
+                g: clampByte(a.g + (b.g - a.g) * t),
+                b: clampByte(a.b + (b.b - a.b) * t)
             };
-            img.onerror = function () { cb(null); };
-            img.src = url;
+        }
+
+        function ensureReadableSurface(col) {
+            const lum = (col.r * 0.299 + col.g * 0.587 + col.b * 0.114);
+            if (lum < 50) return mixRgb(col, { r: 90, g: 85, b: 110 }, 0.6);
+            return col;
+        }
+
+        function paletteFromRgb(avg) {
+            const base = ensureReadableSurface(avg);
+            const soft = mixRgb(base, { r: 255, g: 255, b: 255 }, 0.22);
+            const deep = mixRgb(base, { r: 0, g: 0, b: 0 }, 0.3);
+            const panel = mixRgb(base, { r: 18, g: 16, b: 28 }, 0.32);
+            const panel2 = mixRgb(base, { r: 255, g: 255, b: 255 }, 0.08);
+            const panel3 = mixRgb(base, { r: 255, g: 255, b: 255 }, 0.16);
+            const border = mixRgb(base, { r: 255, g: 255, b: 255 }, 0.28);
+            return {
+                bg: rgbToHex(deep.r, deep.g, deep.b),
+                bg2: rgbToHex(panel.r, panel.g, panel.b),
+                bg3: rgbToHex(panel2.r, panel2.g, panel2.b),
+                border: rgbToHex(mixRgb(panel, border, 0.4).r, mixRgb(panel, border, 0.4).g, mixRgb(panel, border, 0.4).b),
+                border2: rgbToHex(border.r, border.g, border.b),
+                text: '#f5f5f8',
+                text2: '#ebebf2',
+                text3: rgbToHex(soft.r, soft.g, soft.b),
+                text4: rgbToHex(mixRgb(soft, { r: 0, g: 0, b: 0 }, 0.2).r, mixRgb(soft, { r: 0, g: 0, b: 0 }, 0.2).g, mixRgb(soft, { r: 0, g: 0, b: 0 }, 0.2).b),
+                text5: rgbToHex(mixRgb(base, { r: 0, g: 0, b: 0 }, 0.4).r, mixRgb(base, { r: 0, g: 0, b: 0 }, 0.4).g, mixRgb(base, { r: 0, g: 0, b: 0 }, 0.4).b),
+                btn: rgbToHex(panel3.r, panel3.g, panel3.b),
+                btnHover: rgbToHex(mixRgb(panel3, { r: 255, g: 255, b: 255 }, 0.18).r, mixRgb(panel3, { r: 255, g: 255, b: 255 }, 0.18).g, mixRgb(panel3, { r: 255, g: 255, b: 255 }, 0.18).b)
+            };
+        }
+
+        function extractColorsFromImage(url, cb) {
+            const tryLoad = function (useCors) {
+                const img = new Image();
+                if (useCors) img.crossOrigin = 'anonymous';
+                img.onload = function () {
+                    try {
+                        const c = document.createElement('canvas');
+                        c.width = 48;
+                        c.height = 48;
+                        const x = c.getContext('2d', { willReadFrequently: true });
+                        x.drawImage(img, 0, 0, 48, 48);
+                        const data = x.getImageData(0, 0, 48, 48).data;
+                        let r = 0, g = 0, b = 0, n = 0;
+                        for (let i = 0; i < data.length; i += 4) {
+                            if (data[i + 3] < 128) continue;
+                            const pr = data[i], pg = data[i + 1], pb = data[i + 2];
+                            const max = Math.max(pr, pg, pb);
+                            const min = Math.min(pr, pg, pb);
+                            const sat = max - min;
+                            const w = 1 + sat / 48;
+                            r += pr * w; g += pg * w; b += pb * w; n += w;
+                        }
+                        if (!n) { cb(null); return; }
+                        cb(paletteFromRgb({ r: (r / n) | 0, g: (g / n) | 0, b: (b / n) | 0 }));
+                    } catch (_) {
+                        if (useCors) tryLoad(false);
+                        else cb(null);
+                    }
+                };
+                img.onerror = function () {
+                    if (useCors) tryLoad(false);
+                    else cb(null);
+                };
+                img.src = url + (url.indexOf('?') >= 0 ? '&' : '?') + 't=' + Date.now();
+            };
+            const isRemote = /^https?:\/\//i.test(url);
+            tryLoad(isRemote);
+        }
+
+        function applyThemeColors(cols) {
+            if (!cols) return;
+            document.documentElement.style.setProperty('--bg', cols.bg);
+            document.documentElement.style.setProperty('--bg2', cols.bg2);
+            document.documentElement.style.setProperty('--bg3', cols.bg3);
+            document.documentElement.style.setProperty('--border', cols.border);
+            document.documentElement.style.setProperty('--border2', cols.border2);
+            document.documentElement.style.setProperty('--text', cols.text);
+            document.documentElement.style.setProperty('--text2', cols.text2);
+            document.documentElement.style.setProperty('--text3', cols.text3);
+            document.documentElement.style.setProperty('--text4', cols.text4);
+            document.documentElement.style.setProperty('--text5', cols.text5);
+            document.documentElement.style.setProperty('--btn-hover', cols.btnHover || cols.bg3);
+            document.documentElement.style.setProperty('--sidebar-hover', cols.bg3);
+            document.documentElement.style.setProperty('--theme-btn-bg', cols.btn || cols.bg3);
+            document.documentElement.style.setProperty('--theme-btn-hover', cols.btnHover || cols.bg2);
         }
 
         function applyImageTheme(imagePath) {
@@ -1362,19 +1434,7 @@
             document.body.style.setProperty('--site-image', 'url("' + String(imagePath).replace(/"/g, '') + '")');
             document.body.style.setProperty('--site-overlay', 'transparent');
             extractColorsFromImage(imagePath, function (cols) {
-                if (!cols) return;
-                document.documentElement.style.setProperty('--bg', cols.bg);
-                document.documentElement.style.setProperty('--bg2', cols.bg2);
-                document.documentElement.style.setProperty('--bg3', cols.bg3);
-                document.documentElement.style.setProperty('--border', cols.border);
-                document.documentElement.style.setProperty('--border2', cols.border2);
-                document.documentElement.style.setProperty('--text', cols.text);
-                document.documentElement.style.setProperty('--text2', cols.text2);
-                document.documentElement.style.setProperty('--text3', cols.text3);
-                document.documentElement.style.setProperty('--text4', cols.text4);
-                document.documentElement.style.setProperty('--text5', cols.text5);
-                document.documentElement.style.setProperty('--btn-hover', cols.bg3);
-                document.documentElement.style.setProperty('--sidebar-hover', cols.bg2);
+                applyThemeColors(cols || paletteFromRgb({ r: 150, g: 110, b: 140 }));
             });
             updateEffectsVisibility();
         }
