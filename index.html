@@ -971,7 +971,7 @@
     </button>
 
     <!-- Right settings toggle -->
-    <button class="settings-toggle" id="settingsToggle" aria-label="Toggle settings"><img src="settings.png" alt="Settings" style="width:22px;height:22px;object-fit:contain;"></button>
+    <button class="settings-toggle" id="settingsToggle" aria-label="Toggle settings"><img src="icon/settings.png" alt="Settings" style="width:22px;height:22px;object-fit:contain;"></button>
 
     <div class="overlay" id="overlay"></div>
 
@@ -1262,6 +1262,7 @@
 
         const OTHER_SITES = [
             { name: "Crown Games", logo: "logo.png", path: "https://charlis350.github.io/crown/" },
+            { name: "PPFN", logo: "icon/ppfn.png", path: "ppfn/index.html" },
         ];
 
         function makeSiteFallback(name) {
@@ -1377,12 +1378,10 @@
         let siteType = localStorage.getItem('wes_site_type') || 'default';
 
         const SITE_IMAGE_THEMES = [
-            // forcePalette: skip image extraction, always use this color
-            // gif: true lets the background animate (CSS background-image handles it natively)
-            { id: 'Femboy', name: 'Femboy', image: 'femboy.png', forcePalette: { r: 240, g: 175, b: 195 } },
-            { id: 'Logan',  name: 'Logan',  image: 'logan.png',  fallback:     { r: 195, g: 148, b: 90  } },
-            { id: 'Monkey',  name: 'Monkey',  image: 'monkey.png',  fallback:     { r: 195, g: 148, b: 90  } },
-            { id: 'Hacker',  name: 'Hacker',  image: '200.webp',  fallback: { r: 30, g: 180, b: 60 } },
+            { id: 'Femboy', name: 'Femboy', image: 'icon/femboy.png', forcePalette: { r: 240, g: 175, b: 195 } },
+            { id: 'Logan',  name: 'Logan',  image: 'icon/logan.png',  fallback:     { r: 195, g: 148, b: 90  } },
+            { id: 'Monkey',  name: 'Monkey',  image: 'icon/monkey.png',  fallback:     { r: 195, g: 148, b: 90  } },
+            { id: 'Hacker',  name: 'Hacker',  image: 'icon/200.webp',  fallback: { r: 30, g: 180, b: 60 } },
         ];
 
         function effectsAllowed() {
